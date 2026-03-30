@@ -1,0 +1,6 @@
+{
+  "name": "dailySummary",
+  "version": "1.0.0",
+  "description": "每日汇总及打卡云函数",
+  "main": "index.js"
+}

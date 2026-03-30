@@ -1,0 +1,6 @@
+{
+  "name": "foodSearch",
+  "version": "1.0.0",
+  "description": "食物搜索云函数",
+  "main": "index.js"
+}

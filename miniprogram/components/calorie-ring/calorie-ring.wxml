@@ -1,0 +1,7 @@
+<view class="ring-container">
+  <canvas type="2d" id="calorieRing" class="ring-canvas"></canvas>
+  <view class="ring-center">
+    <text class="ring-value text-number">{{current}}</text>
+    <text class="ring-label">/ {{target}} kcal</text>
+  </view>
+</view>

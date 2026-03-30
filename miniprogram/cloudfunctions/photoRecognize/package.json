@@ -1,0 +1,6 @@
+{
+  "name": "photoRecognize",
+  "version": "1.0.0",
+  "description": "拍照 AI 识别云函数，调用 Claude Vision API",
+  "main": "index.js"
+}

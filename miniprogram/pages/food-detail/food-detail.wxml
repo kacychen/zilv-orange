@@ -1,0 +1,99 @@
+<view class="container">
+  <view class="card">
+    <text class="section-title">{{food ? '确认添加' : '手动录入食物'}}</text>
+
+    <view class="form-item">
+      <text class="form-label">食物名称 <text class="required">*</text></text>
+      <input
+        class="form-input"
+        placeholder="如：白米饭"
+        value="{{form.food_name}}"
+        bindinput="onInput"
+        data-field="food_name"
+        disabled="{{!!food}}"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">份量 (g) <text class="required">*</text></text>
+      <input
+        class="form-input"
+        type="digit"
+        placeholder="如：150"
+        value="{{form.amount}}"
+        bindinput="onInput"
+        data-field="amount"
+      />
+    </view>
+
+    <!-- 分隔线 -->
+    <view class="divider" wx:if="{{autoCalc}}">
+      <text class="divider-text">营养数据（自动计算）</text>
+    </view>
+    <view class="divider" wx:else>
+      <text class="divider-text">营养数据（手动填写）</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">卡路里 (kcal) <text class="required">*</text></text>
+      <input
+        class="form-input {{autoCalc ? 'auto-input' : ''}}"
+        type="digit"
+        placeholder="如：174"
+        value="{{form.calories}}"
+        bindinput="onInput"
+        data-field="calories"
+        disabled="{{autoCalc}}"
+      />
+    </view>
+
+    <view class="form-row">
+      <view class="form-item half">
+        <text class="form-label">蛋白质 (g)</text>
+        <input
+          class="form-input {{autoCalc ? 'auto-input' : ''}}"
+          type="digit"
+          placeholder="0"
+          value="{{form.protein}}"
+          bindinput="onInput"
+          data-field="protein"
+          disabled="{{autoCalc}}"
+        />
+      </view>
+      <view class="form-item half">
+        <text class="form-label">碳水 (g)</text>
+        <input
+          class="form-input {{autoCalc ? 'auto-input' : ''}}"
+          type="digit"
+          placeholder="0"
+          value="{{form.carbs}}"
+          bindinput="onInput"
+          data-field="carbs"
+          disabled="{{autoCalc}}"
+        />
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">脂肪 (g)</text>
+      <input
+        class="form-input {{autoCalc ? 'auto-input' : ''}}"
+        type="digit"
+        placeholder="0"
+        value="{{form.fat}}"
+        bindinput="onInput"
+        data-field="fat"
+        disabled="{{autoCalc}}"
+      />
+    </view>
+
+    <!-- 卡路里预览 -->
+    <view class="cal-preview" wx:if="{{form.calories}}">
+      <text class="cal-preview-text">将添加 </text>
+      <text class="cal-preview-num text-number">{{form.calories}}</text>
+      <text class="cal-preview-text"> kcal</text>
+    </view>
+
+    <button class="btn-primary confirm-btn" bindtap="submit">确认添加</button>
+  </view>
+</view>

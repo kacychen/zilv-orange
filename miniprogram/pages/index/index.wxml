@@ -1,0 +1,73 @@
+<view class="container">
+  <!-- 日期 & 问候 -->
+  <view class="header">
+    <text class="greeting">{{greeting}}，{{nickname}} 🍊</text>
+    <text class="date-text">{{dateStr}}</text>
+  </view>
+
+  <!-- 卡路里环形进度 -->
+  <view class="card ring-card">
+    <calorie-ring current="{{totalCalories}}" target="{{calorieTarget}}"></calorie-ring>
+    <view class="ring-footer">
+      <view class="ring-stat">
+        <text class="stat-label">已摄入</text>
+        <text class="stat-value text-number">{{totalCalories}}</text>
+      </view>
+      <view class="ring-stat">
+        <text class="stat-label">目标</text>
+        <text class="stat-value text-number">{{calorieTarget}}</text>
+      </view>
+      <view class="ring-stat">
+        <text class="stat-label">剩余</text>
+        <text class="stat-value text-number {{remaining < 0 ? 'over' : ''}}">{{remaining}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 营养素进度 -->
+  <view class="card">
+    <text class="section-title">营养素摄入</text>
+    <nutrient-bar name="蛋白质" current="{{totalProtein}}" target="{{proteinTarget}}" color="#FF7A00"></nutrient-bar>
+    <nutrient-bar name="碳水化合物" current="{{totalCarbs}}" target="{{carbsTarget}}" color="#4CAF50"></nutrient-bar>
+    <nutrient-bar name="脂肪" current="{{totalFat}}" target="{{fatTarget}}" color="#2196F3"></nutrient-bar>
+  </view>
+
+  <!-- 三餐记录 -->
+  <view class="section-title">今日饮食</view>
+  <meal-card
+    mealType="breakfast"
+    mealName="早餐"
+    icon="🌅"
+    iconBg="#FFF3E0"
+    calories="{{breakfastCal}}"
+    foods="{{breakfastFoods}}"
+    bind:add="onAddMeal"
+  ></meal-card>
+  <meal-card
+    mealType="lunch"
+    mealName="午餐"
+    icon="☀️"
+    iconBg="#E8F5E9"
+    calories="{{lunchCal}}"
+    foods="{{lunchFoods}}"
+    bind:add="onAddMeal"
+  ></meal-card>
+  <meal-card
+    mealType="dinner"
+    mealName="晚餐"
+    icon="🌙"
+    iconBg="#E3F2FD"
+    calories="{{dinnerCal}}"
+    foods="{{dinnerFoods}}"
+    bind:add="onAddMeal"
+  ></meal-card>
+  <meal-card
+    mealType="snack"
+    mealName="加餐"
+    icon="🍪"
+    iconBg="#F3E5F5"
+    calories="{{snackCal}}"
+    foods="{{snackFoods}}"
+    bind:add="onAddMeal"
+  ></meal-card>
+</view>

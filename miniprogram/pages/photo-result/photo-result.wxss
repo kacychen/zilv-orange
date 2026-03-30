@@ -1,0 +1,148 @@
+.hint-text {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 30rpx;
+}
+
+.food-list {
+  padding-bottom: 200rpx;
+}
+
+.food-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+}
+
+.food-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.food-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.food-cal {
+  font-size: 28rpx;
+  color: #FF7A00;
+  font-weight: 600;
+}
+
+.food-detail {
+  padding: 16rpx 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.detail-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.amount-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #F8F8F8;
+  border-radius: 12rpx;
+  padding: 8rpx 16rpx;
+}
+
+.amount-input {
+  width: 120rpx;
+  font-size: 28rpx;
+  text-align: right;
+}
+
+.amount-unit {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 6rpx;
+}
+
+.macros-row {
+  display: flex;
+  gap: 12rpx;
+}
+
+.macro-tag {
+  font-size: 22rpx;
+  padding: 6rpx 14rpx;
+  border-radius: 12rpx;
+}
+
+.food-actions {
+  text-align: right;
+  margin-top: 12rpx;
+}
+
+.action-remove {
+  font-size: 24rpx;
+  color: #F44336;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 100rpx 0;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.total-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.total-cal {
+  font-size: 32rpx;
+  color: #FF7A00;
+  font-weight: 700;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF7A00, #FF9A40);
+  color: #fff;
+  border: none;
+  border-radius: 48rpx;
+  padding: 16rpx 60rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.btn-primary::after {
+  border: none;
+}

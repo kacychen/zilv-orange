@@ -1,0 +1,259 @@
+.header {
+  text-align: center;
+  padding: 40rpx 0 30rpx;
+}
+
+.title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+.subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 12rpx;
+}
+
+/* 步骤指示 */
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20rpx 0 40rpx;
+}
+
+.step {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: #F0F0F0;
+  color: #999;
+  font-size: 26rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step.active {
+  background: #FF7A00;
+  color: #fff;
+}
+
+.step-line {
+  flex: 1;
+  max-width: 80rpx;
+  height: 4rpx;
+  background: #F0F0F0;
+  margin: 0 10rpx;
+}
+
+/* 表单 */
+.form-card {
+  margin-bottom: 20rpx;
+}
+
+.form-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  background: #F8F8F8;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.picker-value {
+  height: 80rpx;
+  background: #F8F8F8;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.picker-value.placeholder {
+  color: #BDBDBD;
+}
+
+/* 单选按钮组 */
+.radio-group {
+  display: flex;
+  gap: 20rpx;
+}
+
+.radio-item {
+  flex: 1;
+  height: 80rpx;
+  background: #F8F8F8;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #666;
+  border: 2rpx solid transparent;
+}
+
+.radio-item.selected {
+  background: #FFF3E0;
+  color: #FF7A00;
+  border-color: #FF7A00;
+  font-weight: 600;
+}
+
+/* 目标选项 */
+.option-group {
+  display: flex;
+  gap: 16rpx;
+}
+
+.option-item {
+  flex: 1;
+  padding: 20rpx 10rpx;
+  background: #F8F8F8;
+  border-radius: 16rpx;
+  text-align: center;
+  border: 2rpx solid transparent;
+}
+
+.option-item.selected {
+  background: #FFF3E0;
+  border-color: #FF7A00;
+}
+
+.option-icon {
+  display: block;
+  font-size: 36rpx;
+  margin-bottom: 8rpx;
+}
+
+.option-text {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.option-item.selected .option-text {
+  color: #FF7A00;
+}
+
+/* 活动量列表 */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.activity-item {
+  padding: 20rpx 24rpx;
+  background: #F8F8F8;
+  border-radius: 16rpx;
+  border: 2rpx solid transparent;
+}
+
+.activity-item.selected {
+  background: #FFF3E0;
+  border-color: #FF7A00;
+}
+
+.activity-title {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.activity-item.selected .activity-title {
+  color: #FF7A00;
+}
+
+.activity-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+/* 热量预估 */
+.calorie-preview {
+  background: linear-gradient(135deg, #FF7A00, #FF9A40);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  text-align: center;
+  margin: 16rpx 0;
+}
+
+.preview-label {
+  display: block;
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.85);
+}
+
+.preview-value {
+  display: block;
+  font-size: 52rpx;
+  color: #fff;
+  font-weight: 700;
+  margin-top: 8rpx;
+}
+
+/* 按钮 */
+.next-btn {
+  width: 100%;
+  margin-top: 10rpx;
+}
+
+.btn-row {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 10rpx;
+}
+
+.btn-back {
+  flex: 0 0 180rpx;
+  height: 88rpx;
+  background: #F0F0F0;
+  color: #666;
+  border: none;
+  border-radius: 48rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-back::after {
+  border: none;
+}
+
+.flex1 {
+  flex: 1;
+}

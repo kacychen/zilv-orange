@@ -1,0 +1,35 @@
+.nutrient-item {
+  margin-bottom: 20rpx;
+}
+
+.nutrient-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.nutrient-name {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.nutrient-value {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.bar-bg {
+  width: 100%;
+  height: 16rpx;
+  background: #F0F0F0;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 8rpx;
+  transition: width 0.3s ease;
+  max-width: 100%;
+}

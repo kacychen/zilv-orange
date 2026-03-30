@@ -1,0 +1,42 @@
+<view class="container">
+  <text class="section-title">AI 识别结果</text>
+  <text class="hint-text">请核对识别结果，可修改份量后添加</text>
+
+  <view class="food-list">
+    <view class="food-card" wx:for="{{foods}}" wx:key="index">
+      <view class="food-header">
+        <text class="food-name">{{item.food_name}}</text>
+        <text class="food-cal text-number">{{item.calories}} kcal</text>
+      </view>
+      <view class="food-detail">
+        <view class="detail-row">
+          <text class="detail-label">估算份量</text>
+          <view class="amount-input-wrap">
+            <input class="amount-input" type="digit" value="{{item.estimated_amount}}" data-index="{{index}}" bindinput="onAmountChange" />
+            <text class="amount-unit">g</text>
+          </view>
+        </view>
+        <view class="macros-row">
+          <text class="macro-tag" style="background:#FFF3E0;color:#FF7A00;">蛋白{{item.protein}}g</text>
+          <text class="macro-tag" style="background:#E8F5E9;color:#4CAF50;">碳水{{item.carbs}}g</text>
+          <text class="macro-tag" style="background:#E3F2FD;color:#2196F3;">脂肪{{item.fat}}g</text>
+        </view>
+      </view>
+      <view class="food-actions">
+        <text class="action-remove" bindtap="removeFood" data-index="{{index}}">移除</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{foods.length === 0}}">
+    <text class="empty-text">暂无识别结果</text>
+  </view>
+
+  <view class="bottom-bar" wx:if="{{foods.length > 0}}">
+    <view class="total-info">
+      <text class="total-label">共 {{foods.length}} 项</text>
+      <text class="total-cal text-number">{{totalCalories}} kcal</text>
+    </view>
+    <button class="btn-primary" bindtap="confirmAll">全部添加</button>
+  </view>
+</view>

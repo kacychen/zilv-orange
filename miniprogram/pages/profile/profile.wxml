@@ -1,0 +1,125 @@
+<view class="container" wx:if="{{user}}">
+  <!-- 用户头部 -->
+  <view class="profile-header card">
+    <view class="avatar-wrap">
+      <text class="avatar-emoji">🍊</text>
+    </view>
+    <view class="profile-info">
+      <text class="profile-name">{{user.nickname}}</text>
+      <view class="tag-row">
+        <text class="tag">{{goalLabel}}</text>
+        <text class="tag" style="margin-left:12rpx;">{{activityLabel}}</text>
+      </view>
+    </view>
+    <view class="edit-btn" bindtap="startEdit">
+      <text class="edit-icon">✏️</text>
+    </view>
+  </view>
+
+  <!-- 打卡统计 -->
+  <view class="card stats-row">
+    <view class="stat-item">
+      <text class="stat-num text-number">{{streak}}</text>
+      <text class="stat-label">连续打卡天</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num text-number">{{totalRecordDays}}</text>
+      <text class="stat-label">累计记录天</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num text-number">{{user.daily_calorie_target}}</text>
+      <text class="stat-label">每日目标kcal</text>
+    </view>
+  </view>
+
+  <!-- 身体数据 -->
+  <view class="card">
+    <text class="section-title">身体数据</text>
+    <view class="info-list">
+      <view class="info-item">
+        <text class="info-label">身高</text>
+        <text class="info-value text-number">{{user.height}} cm</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">当前体重</text>
+        <text class="info-value text-number">{{user.weight}} kg</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">目标体重</text>
+        <text class="info-value text-number">{{user.target_weight}} kg</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">差距</text>
+        <text class="info-value text-number {{user.weight - user.target_weight > 0 ? 'text-primary' : ''}}">
+          {{user.weight - user.target_weight > 0 ? '+' : ''}}{{(user.weight - user.target_weight).toFixed(1)}} kg
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成就徽章 -->
+  <view class="card">
+    <text class="section-title">成就徽章</text>
+    <view wx:if="{{achievements.length > 0}}" class="achievements-grid">
+      <view class="achievement-item" wx:for="{{achievements}}" wx:key="_id">
+        <view class="achievement-icon">{{item.icon}}</view>
+        <text class="achievement-name">{{item.name}}</text>
+        <text class="achievement-desc">{{item.desc}}</text>
+      </view>
+    </view>
+    <view wx:else class="empty-achievements">
+      <text class="empty-text">快去记录饮食，解锁成就！</text>
+    </view>
+  </view>
+</view>
+
+<!-- 编辑个人信息弹窗 -->
+<view class="modal-mask" wx:if="{{editing}}" bindtap="cancelEdit"></view>
+<view class="edit-modal card" wx:if="{{editing}}">
+  <text class="modal-title">编辑个人信息</text>
+
+  <view class="form-item">
+    <text class="form-label">昵称</text>
+    <input class="form-input" value="{{editForm.nickname}}" bindinput="onEditInput" data-field="nickname" />
+  </view>
+  <view class="form-row">
+    <view class="form-item half">
+      <text class="form-label">身高(cm)</text>
+      <input class="form-input" type="digit" value="{{editForm.height}}" bindinput="onEditInput" data-field="height" />
+    </view>
+    <view class="form-item half">
+      <text class="form-label">体重(kg)</text>
+      <input class="form-input" type="digit" value="{{editForm.weight}}" bindinput="onEditInput" data-field="weight" />
+    </view>
+  </view>
+  <view class="form-item">
+    <text class="form-label">目标体重(kg)</text>
+    <input class="form-input" type="digit" value="{{editForm.target_weight}}" bindinput="onEditInput" data-field="target_weight" />
+  </view>
+
+  <view class="form-item">
+    <text class="form-label">健康目标</text>
+    <view class="option-group">
+      <view class="option-btn {{editForm.goal === 'lose_weight' ? 'selected' : ''}}" bindtap="setEditGoal" data-value="lose_weight">减脂</view>
+      <view class="option-btn {{editForm.goal === 'maintain' ? 'selected' : ''}}" bindtap="setEditGoal" data-value="maintain">维持</view>
+      <view class="option-btn {{editForm.goal === 'gain_muscle' ? 'selected' : ''}}" bindtap="setEditGoal" data-value="gain_muscle">增肌</view>
+    </view>
+  </view>
+
+  <view class="form-item">
+    <text class="form-label">活动量</text>
+    <view class="option-group">
+      <view class="option-btn {{editForm.activity_level === 'sedentary' ? 'selected' : ''}}" bindtap="setEditActivity" data-value="sedentary">久坐</view>
+      <view class="option-btn {{editForm.activity_level === 'light' ? 'selected' : ''}}" bindtap="setEditActivity" data-value="light">轻度</view>
+      <view class="option-btn {{editForm.activity_level === 'moderate' ? 'selected' : ''}}" bindtap="setEditActivity" data-value="moderate">中度</view>
+      <view class="option-btn {{editForm.activity_level === 'active' ? 'selected' : ''}}" bindtap="setEditActivity" data-value="active">高度</view>
+    </view>
+  </view>
+
+  <view class="modal-buttons">
+    <button class="btn-back" bindtap="cancelEdit">取消</button>
+    <button class="btn-primary flex1" bindtap="saveEdit">保存</button>
+  </view>
+</view>

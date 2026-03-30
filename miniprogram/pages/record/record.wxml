@@ -1,0 +1,64 @@
+<view class="container">
+  <view class="record-header">
+    <text class="section-title">添加{{mealName}}</text>
+  </view>
+
+  <!-- 三种记录方式 -->
+  <view class="method-cards">
+    <view class="method-card" bindtap="goFoodSearch">
+      <view class="method-icon" style="background: #FFF3E0;">
+        <text>🔍</text>
+      </view>
+      <text class="method-name">搜索食物</text>
+      <text class="method-desc">从食物数据库中搜索</text>
+    </view>
+
+    <view class="method-card" bindtap="takePhoto">
+      <view class="method-icon" style="background: #E8F5E9;">
+        <text>📷</text>
+      </view>
+      <text class="method-name">拍照识别</text>
+      <text class="method-desc">AI 智能识别食物</text>
+    </view>
+
+    <view class="method-card" bindtap="manualInput">
+      <view class="method-icon" style="background: #E3F2FD;">
+        <text>✏️</text>
+      </view>
+      <text class="method-name">手动录入</text>
+      <text class="method-desc">自定义食物和热量</text>
+    </view>
+  </view>
+
+  <!-- 手动录入表单 -->
+  <view class="card manual-form" wx:if="{{showManual}}">
+    <text class="section-title">手动录入食物</text>
+    <view class="form-item">
+      <text class="form-label">食物名称</text>
+      <input class="form-input" placeholder="如：白米饭" bindinput="onInputName" value="{{manualFood.food_name}}" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">份量 (g)</text>
+      <input class="form-input" type="digit" placeholder="如：150" bindinput="onInputAmount" value="{{manualFood.amount}}" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">卡路里 (kcal)</text>
+      <input class="form-input" type="digit" placeholder="如：174" bindinput="onInputCalories" value="{{manualFood.calories}}" />
+    </view>
+    <view class="form-row">
+      <view class="form-item half">
+        <text class="form-label">蛋白质 (g)</text>
+        <input class="form-input" type="digit" placeholder="0" bindinput="onInputProtein" value="{{manualFood.protein}}" />
+      </view>
+      <view class="form-item half">
+        <text class="form-label">碳水 (g)</text>
+        <input class="form-input" type="digit" placeholder="0" bindinput="onInputCarbs" value="{{manualFood.carbs}}" />
+      </view>
+    </view>
+    <view class="form-item half">
+      <text class="form-label">脂肪 (g)</text>
+      <input class="form-input" type="digit" placeholder="0" bindinput="onInputFat" value="{{manualFood.fat}}" />
+    </view>
+    <button class="btn-primary" bindtap="submitManual">确认添加</button>
+  </view>
+</view>

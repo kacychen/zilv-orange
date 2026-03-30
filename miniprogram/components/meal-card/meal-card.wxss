@@ -1,0 +1,93 @@
+.meal-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+}
+
+.meal-header {
+  display: flex;
+  align-items: center;
+}
+
+.meal-icon-wrap {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.meal-icon {
+  font-size: 40rpx;
+}
+
+.meal-info {
+  flex: 1;
+}
+
+.meal-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+}
+
+.meal-cal {
+  font-size: 24rpx;
+  color: #FF7A00;
+  display: block;
+  margin-top: 4rpx;
+}
+
+.meal-add {
+  width: 56rpx;
+  height: 56rpx;
+  background: #FFF3E0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-btn {
+  font-size: 36rpx;
+  color: #FF7A00;
+  font-weight: 600;
+}
+
+.meal-foods {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F5F5F5;
+}
+
+.food-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8rpx 0;
+}
+
+.food-name {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.food-cal {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.meal-empty {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F5F5F5;
+}
+
+.empty-text {
+  font-size: 24rpx;
+  color: #CCC;
+}

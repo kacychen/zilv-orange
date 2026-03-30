@@ -1,0 +1,85 @@
+.form-item {
+  margin-bottom: 28rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.required {
+  color: #F44336;
+  font-size: 24rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  background: #F8F8F8;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.form-input.auto-input {
+  background: #FFF3E0;
+  color: #FF7A00;
+}
+
+.form-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.form-item.half {
+  flex: 1;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 10rpx 0 24rpx;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1rpx;
+  background: #F0F0F0;
+}
+
+.divider-text {
+  font-size: 22rpx;
+  color: #BDBDBD;
+  padding: 0 16rpx;
+}
+
+.cal-preview {
+  background: linear-gradient(135deg, #FF7A00, #FF9A40);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  text-align: center;
+  margin: 10rpx 0 20rpx;
+}
+
+.cal-preview-text {
+  font-size: 28rpx;
+  color: rgba(255,255,255,0.85);
+}
+
+.cal-preview-num {
+  font-size: 44rpx;
+  color: #fff;
+  font-weight: 700;
+}
+
+.confirm-btn {
+  width: 100%;
+  margin-top: 10rpx;
+}

@@ -1,0 +1,54 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/record/record",
+    "pages/analysis/analysis",
+    "pages/profile/profile",
+    "pages/food-search/food-search",
+    "pages/photo-result/photo-result",
+    "pages/onboarding/onboarding",
+    "pages/food-detail/food-detail"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FF7A00",
+    "navigationBarTitleText": "自律橙子",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#FFF3E0"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FF7A00",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/record/record",
+        "text": "记录",
+        "iconPath": "images/tab-record.png",
+        "selectedIconPath": "images/tab-record-active.png"
+      },
+      {
+        "pagePath": "pages/analysis/analysis",
+        "text": "分析",
+        "iconPath": "images/tab-analysis.png",
+        "selectedIconPath": "images/tab-analysis-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "cloud": true,
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

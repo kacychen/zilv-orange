@@ -1,0 +1,156 @@
+.card-header {
+  margin-bottom: 20rpx;
+}
+
+.line-chart {
+  width: 100%;
+  height: 300rpx;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 30rpx;
+  margin-top: 16rpx;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-dot {
+  width: 24rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+}
+
+.legend-dot.dashed {
+  background: #FFCCAA;
+}
+
+.legend-text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 统计摘要 */
+.stats-row {
+  display: flex;
+  align-items: center;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #FF7A00;
+}
+
+.stat-desc {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 60rpx;
+  background: #F0F0F0;
+}
+
+/* 饼图 */
+.pie-container {
+  display: flex;
+  align-items: center;
+  gap: 30rpx;
+  margin: 16rpx 0;
+}
+
+.pie-chart {
+  width: 240rpx;
+  height: 240rpx;
+  flex-shrink: 0;
+}
+
+.pie-legend {
+  flex: 1;
+}
+
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.pie-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pie-name {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.pie-percent {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+.empty-chart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 160rpx;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: #BDBDBD;
+}
+
+/* 营养素详情 */
+.nutrient-details {
+  border-top: 1rpx solid #F5F5F5;
+  padding-top: 20rpx;
+  margin-top: 8rpx;
+}
+
+.nutrient-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 10rpx 0;
+}
+
+.nutrient-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nutrient-detail-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.nutrient-detail-val {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 600;
+}

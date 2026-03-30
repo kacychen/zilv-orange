@@ -1,0 +1,9 @@
+<view class="nutrient-item">
+  <view class="nutrient-header">
+    <text class="nutrient-name">{{name}}</text>
+    <text class="nutrient-value text-number">{{current}}g / {{target}}g</text>
+  </view>
+  <view class="bar-bg">
+    <view class="bar-fill" style="width: {{percent}}%; background: {{color}};"></view>
+  </view>
+</view>

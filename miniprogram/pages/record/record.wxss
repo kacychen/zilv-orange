@@ -1,0 +1,103 @@
+.record-header {
+  margin-bottom: 30rpx;
+}
+
+.method-cards {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+
+.method-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx 16rpx;
+  margin: 0 10rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.method-card:first-child {
+  margin-left: 0;
+}
+
+.method-card:last-child {
+  margin-right: 0;
+}
+
+.method-icon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-bottom: 16rpx;
+}
+
+.method-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+}
+
+.method-desc {
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 6rpx;
+  display: block;
+}
+
+.manual-form {
+  margin-top: 20rpx;
+}
+
+.form-item {
+  margin-bottom: 24rpx;
+}
+
+.form-item.half {
+  width: 48%;
+  display: inline-block;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.form-input {
+  background: #F8F8F8;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  font-size: 28rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  margin-top: 30rpx;
+  background: linear-gradient(135deg, #FF7A00, #FF9A40);
+  color: #fff;
+  border: none;
+  border-radius: 48rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.btn-primary::after {
+  border: none;
+}

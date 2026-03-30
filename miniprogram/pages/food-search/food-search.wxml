@@ -1,0 +1,70 @@
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input class="search-input" placeholder="搜索食物名称" bindinput="onSearchInput" bindconfirm="doSearch" value="{{keyword}}" focus="true" />
+    </view>
+    <text class="search-btn" bindtap="doSearch">搜索</text>
+  </view>
+
+  <!-- 搜索结果列表 -->
+  <view class="result-list" wx:if="{{results.length > 0}}">
+    <view class="result-item" wx:for="{{results}}" wx:key="index" bindtap="selectFood" data-index="{{index}}">
+      <view class="food-info">
+        <text class="food-name">{{item.food_name}}</text>
+        <text class="food-unit">每100g</text>
+      </view>
+      <view class="food-nutrition">
+        <text class="food-cal text-number">{{item.calories}} kcal</text>
+        <view class="food-macros">
+          <text class="macro">蛋白{{item.protein}}g</text>
+          <text class="macro">碳水{{item.carbs}}g</text>
+          <text class="macro">脂肪{{item.fat}}g</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{searched && results.length === 0}}">
+    <text class="empty-icon">🍽️</text>
+    <text class="empty-text">未找到相关食物</text>
+    <text class="empty-hint">试试其他关键词，或手动录入</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">搜索中...</text>
+  </view>
+
+  <!-- 选中食物弹窗 -->
+  <view class="modal-mask" wx:if="{{showAmountModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="">
+      <text class="modal-title">{{selectedFood.food_name}}</text>
+      <view class="form-item">
+        <text class="form-label">份量 (g)</text>
+        <input class="form-input" type="digit" value="{{inputAmount}}" bindinput="onAmountInput" focus="true" />
+      </view>
+      <view class="nutrition-preview">
+        <view class="preview-item">
+          <text class="preview-label">卡路里</text>
+          <text class="preview-value text-number">{{previewCal}} kcal</text>
+        </view>
+        <view class="preview-item">
+          <text class="preview-label">蛋白质</text>
+          <text class="preview-value text-number">{{previewProtein}} g</text>
+        </view>
+        <view class="preview-item">
+          <text class="preview-label">碳水</text>
+          <text class="preview-value text-number">{{previewCarbs}} g</text>
+        </view>
+        <view class="preview-item">
+          <text class="preview-label">脂肪</text>
+          <text class="preview-value text-number">{{previewFat}} g</text>
+        </view>
+      </view>
+      <button class="btn-primary" bindtap="confirmAdd">确认添加</button>
+    </view>
+  </view>
+</view>

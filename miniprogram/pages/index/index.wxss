@@ -1,0 +1,54 @@
+.header {
+  margin-bottom: 30rpx;
+}
+
+.greeting {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #333;
+  display: block;
+}
+
+.date-text {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.ring-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ring-footer {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 30rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #F5F5F5;
+}
+
+.ring-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  color: #333;
+  font-weight: 700;
+  margin-top: 4rpx;
+}
+
+.stat-value.over {
+  color: #F44336;
+}

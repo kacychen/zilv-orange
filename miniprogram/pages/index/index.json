@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "calorie-ring": "/components/calorie-ring/calorie-ring",
+    "nutrient-bar": "/components/nutrient-bar/nutrient-bar",
+    "meal-card": "/components/meal-card/meal-card"
+  },
+  "navigationBarTitleText": "自律橙子"
+}

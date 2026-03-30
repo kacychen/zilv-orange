@@ -1,0 +1,6 @@
+{
+  "name": "calorieCalc",
+  "version": "1.0.0",
+  "description": "卡路里目标计算云函数",
+  "main": "index.js"
+}

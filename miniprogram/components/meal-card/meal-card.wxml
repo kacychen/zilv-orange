@@ -1,0 +1,23 @@
+<view class="meal-card" bindtap="onTap">
+  <view class="meal-header">
+    <view class="meal-icon-wrap" style="background: {{iconBg}};">
+      <text class="meal-icon">{{icon}}</text>
+    </view>
+    <view class="meal-info">
+      <text class="meal-name">{{mealName}}</text>
+      <text class="meal-cal text-number">{{calories}} kcal</text>
+    </view>
+    <view class="meal-add">
+      <text class="add-btn">+</text>
+    </view>
+  </view>
+  <view class="meal-foods" wx:if="{{foods.length > 0}}">
+    <view class="food-item" wx:for="{{foods}}" wx:key="index">
+      <text class="food-name">{{item.food_name}}</text>
+      <text class="food-cal text-number">{{item.calories}} kcal</text>
+    </view>
+  </view>
+  <view class="meal-empty" wx:else>
+    <text class="empty-text">点击添加食物</text>
+  </view>
+</view>
