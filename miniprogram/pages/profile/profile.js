@@ -1,5 +1,4 @@
 const { calcDailyTarget } = require('../../utils/bmr');
-const { localDB, serverDate, LOCAL_OPENID } = require('../../utils/localDB');
 
 const GOAL_LABELS = {
   lose_weight: '减脂',
@@ -30,6 +29,8 @@ Page({
     achievements: [],
     goalLabel: '',
     activityLabel: '',
+    weightGap: 0,
+    weightGapStr: '0.0',
     editing: false,
     editForm: {}
   },
@@ -44,10 +45,13 @@ Page({
 
     if (!user) return;
 
+    const gap = user.weight - (user.target_weight || user.weight);
     this.setData({
       user,
       goalLabel: GOAL_LABELS[user.goal] || user.goal,
-      activityLabel: ACTIVITY_LABELS[user.activity_level] || user.activity_level
+      activityLabel: ACTIVITY_LABELS[user.activity_level] || user.activity_level,
+      weightGap: gap,
+      weightGapStr: (gap > 0 ? '+' : '') + gap.toFixed(1)
     });
 
     this.loadStreak();
@@ -55,8 +59,13 @@ Page({
   },
 
   loadStreak() {
-    localDB.query('daily_summary', {}).then(res => {
-      const summaries = res.data.sort((a, b) => b.date.localeCompare(a.date));
+    const db = wx.cloud.database();
+    db.collection('daily_summary')
+      .orderBy('date', 'desc')
+      .limit(60)
+      .get()
+      .then(res => {
+        const summaries = res.data;
         let streak = 0;
         const today = new Date();
 
@@ -78,7 +87,8 @@ Page({
   },
 
   loadAchievements() {
-    localDB.query('achievements', {}).then(res => {
+    const db = wx.cloud.database();
+    db.collection('achievements').get().then(res => {
       const achievements = res.data.map(a => ({
         ...a,
         ...(ACHIEVEMENT_CONFIG[a.type] || { icon: '🏅', name: a.type, desc: '' })
@@ -144,14 +154,17 @@ Page({
 
     wx.showLoading({ title: '保存中...' });
 
-    localDB.update('users', user._id, {
-      nickname: updatedUser.nickname,
-      height: updatedUser.height,
-      weight: updatedUser.weight,
-      target_weight: updatedUser.target_weight,
-      goal: updatedUser.goal,
-      activity_level: updatedUser.activity_level,
-      daily_calorie_target: updatedUser.daily_calorie_target
+    const db = wx.cloud.database();
+    db.collection('users').doc(user._id).update({
+      data: {
+        nickname: updatedUser.nickname,
+        height: updatedUser.height,
+        weight: updatedUser.weight,
+        target_weight: updatedUser.target_weight,
+        goal: updatedUser.goal,
+        activity_level: updatedUser.activity_level,
+        daily_calorie_target: updatedUser.daily_calorie_target
+      }
     }).then(() => {
       app.globalData.userInfo = updatedUser;
       wx.hideLoading();
