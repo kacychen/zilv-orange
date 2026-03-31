@@ -1,4 +1,5 @@
 const { calcDailyTarget } = require('../../utils/bmr');
+const { localDB, serverDate, LOCAL_OPENID } = require('../../utils/localDB');
 
 const GOAL_LABELS = {
   lose_weight: '减脂',
@@ -54,13 +55,8 @@ Page({
   },
 
   loadStreak() {
-    const db = wx.cloud.database();
-    db.collection('daily_summary')
-      .orderBy('date', 'desc')
-      .limit(60)
-      .get()
-      .then(res => {
-        const summaries = res.data;
+    localDB.query('daily_summary', {}).then(res => {
+      const summaries = res.data.sort((a, b) => b.date.localeCompare(a.date));
         let streak = 0;
         const today = new Date();
 
@@ -82,8 +78,7 @@ Page({
   },
 
   loadAchievements() {
-    const db = wx.cloud.database();
-    db.collection('achievements').get().then(res => {
+    localDB.query('achievements', {}).then(res => {
       const achievements = res.data.map(a => ({
         ...a,
         ...(ACHIEVEMENT_CONFIG[a.type] || { icon: '🏅', name: a.type, desc: '' })
@@ -147,19 +142,16 @@ Page({
     };
     updatedUser.daily_calorie_target = calcDailyTarget(updatedUser);
 
-    const db = wx.cloud.database();
     wx.showLoading({ title: '保存中...' });
 
-    db.collection('users').doc(user._id).update({
-      data: {
-        nickname: updatedUser.nickname,
-        height: updatedUser.height,
-        weight: updatedUser.weight,
-        target_weight: updatedUser.target_weight,
-        goal: updatedUser.goal,
-        activity_level: updatedUser.activity_level,
-        daily_calorie_target: updatedUser.daily_calorie_target
-      }
+    localDB.update('users', user._id, {
+      nickname: updatedUser.nickname,
+      height: updatedUser.height,
+      weight: updatedUser.weight,
+      target_weight: updatedUser.target_weight,
+      goal: updatedUser.goal,
+      activity_level: updatedUser.activity_level,
+      daily_calorie_target: updatedUser.daily_calorie_target
     }).then(() => {
       app.globalData.userInfo = updatedUser;
       wx.hideLoading();

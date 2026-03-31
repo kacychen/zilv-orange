@@ -1,5 +1,6 @@
 const { getToday } = require('../../utils/date');
 const { sumNutrition, recommendedNutrients } = require('../../utils/nutrition');
+const { localDB, LOCAL_OPENID } = require('../../utils/localDB');
 
 Page({
   data: {
@@ -69,12 +70,9 @@ Page({
   },
 
   loadTodayRecords() {
-    const db = wx.cloud.database();
     const today = getToday();
 
-    db.collection('meal_records').where({
-      date: today
-    }).get().then(res => {
+    localDB.query('meal_records', { date: today }).then(res => {
       const records = res.data;
       const app = getApp();
       app.globalData.todayRecords = records;

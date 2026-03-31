@@ -1,4 +1,5 @@
 const { getRecentDays, getShortDate } = require('../../utils/date');
+const { localDB, command } = require('../../utils/localDB');
 
 Page({
   data: {
@@ -30,14 +31,8 @@ Page({
     this.setData({ calorieTarget: target });
 
     const days = getRecentDays(7);
-    const db = wx.cloud.database();
-    const _ = db.command;
 
-    db.collection('daily_summary')
-      .where({
-        date: _.in(days)
-      })
-      .get()
+    localDB.query('daily_summary', { date: command.in(days) })
       .then(res => {
         const summaryMap = {};
         res.data.forEach(s => {
@@ -71,11 +66,8 @@ Page({
 
   loadTodayNutrients() {
     const today = getRecentDays(1)[0];
-    const db = wx.cloud.database();
 
-    db.collection('meal_records')
-      .where({ date: today })
-      .get()
+    localDB.query('meal_records', { date: today })
       .then(res => {
         const records = res.data;
         const totalProtein = parseFloat(records.reduce((s, r) => s + (r.protein || 0), 0).toFixed(1));
