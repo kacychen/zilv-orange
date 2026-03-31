@@ -1,5 +1,4 @@
 const { getToday } = require('../../utils/date');
-const { localDB, serverDate } = require('../../utils/localDB');
 
 const MEAL_NAMES = {
   breakfast: '早餐',
@@ -116,6 +115,7 @@ Page({
       return;
     }
 
+    const db = wx.cloud.database();
     const record = {
       date: getToday(),
       meal_type: this.data.mealType,
@@ -126,11 +126,11 @@ Page({
       carbs: parseFloat(f.carbs) || 0,
       fat: parseFloat(f.fat) || 0,
       source: 'manual',
-      created_at: serverDate()
+      created_at: db.serverDate()
     };
 
     wx.showLoading({ title: '保存中...' });
-    localDB.add('meal_records', record).then(() => {
+    db.collection('meal_records').add({ data: record }).then(() => {
       wx.hideLoading();
       wx.showToast({ title: '添加成功', icon: 'success' });
       setTimeout(() => wx.navigateBack(), 1000);
