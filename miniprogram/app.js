@@ -1,9 +1,10 @@
-const { localDB, LOCAL_OPENID } = require('./utils/localDB');
-
 App({
   onLaunch() {
-    // 本地调试模式：不需要云开发
-    this.globalData.openid = LOCAL_OPENID;
+    if (!wx.cloud) {
+      console.error('请使用 2.2.3 或以上的基础库以使用云能力');
+      return;
+    }
+    wx.cloud.init({ traceUser: true });
     this.checkOnboarding();
   },
 
@@ -11,17 +12,24 @@ App({
     userInfo: null,
     dailySummary: null,
     todayRecords: [],
-    openid: LOCAL_OPENID
+    openid: ''
   },
 
   checkOnboarding() {
-    localDB.query('users', { _id: LOCAL_OPENID }).then(res => {
-      if (res.data.length === 0) {
-        // 新用户，跳转引导页
-        wx.navigateTo({ url: '/pages/onboarding/onboarding' });
-      } else {
-        this.globalData.userInfo = res.data[0];
-      }
+    const db = wx.cloud.database();
+    wx.cloud.callFunction({ name: 'login' }).then(res => {
+      const openid = res.result.openid;
+      this.globalData.openid = openid;
+
+      db.collection('users').where({ _id: openid }).get().then(res => {
+        if (res.data.length === 0) {
+          wx.navigateTo({ url: '/pages/onboarding/onboarding' });
+        } else {
+          this.globalData.userInfo = res.data[0];
+        }
+      });
+    }).catch(err => {
+      console.error('login 云函数调用失败', err);
     });
   }
 });
