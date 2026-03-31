@@ -104,7 +104,8 @@ Page({
 
   submitManual() {
     const f = this.data.manualFood;
-    if (!f.food_name || !f.calories) {
+    const cal = parseFloat(f.calories);
+    if (!f.food_name || !Number.isFinite(cal) || cal <= 0) {
       wx.showToast({ title: '请填写食物名称和卡路里', icon: 'none' });
       return;
     }
@@ -121,10 +122,10 @@ Page({
       meal_type: this.data.mealType,
       food_name: f.food_name,
       amount: amount,
-      calories: parseFloat(f.calories) || 0,
-      protein: parseFloat(f.protein) || 0,
-      carbs: parseFloat(f.carbs) || 0,
-      fat: parseFloat(f.fat) || 0,
+      calories: cal,
+      protein: Math.max(0, parseFloat(f.protein) || 0),
+      carbs: Math.max(0, parseFloat(f.carbs) || 0),
+      fat: Math.max(0, parseFloat(f.fat) || 0),
       source: 'manual',
       created_at: db.serverDate()
     };

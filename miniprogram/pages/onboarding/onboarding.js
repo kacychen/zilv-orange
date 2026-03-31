@@ -89,26 +89,37 @@ Page({
   },
 
   prevStep() {
-    this.setData({ step: this.data.step - 1 });
+    if (this.data.step > 1) this.setData({ step: this.data.step - 1 });
   },
 
   submit() {
     if (this.data.submitting) return;
 
     const { form } = this.data;
-    const dailyCalorieTarget = calcDailyTarget({
-      weight: parseFloat(form.weight),
-      height: parseFloat(form.height),
-      birthday: form.birthday,
-      gender: form.gender,
-      activity_level: form.activity_level,
-      goal: form.goal
-    });
+    let dailyCalorieTarget;
+    try {
+      dailyCalorieTarget = calcDailyTarget({
+        weight: parseFloat(form.weight),
+        height: parseFloat(form.height),
+        birthday: form.birthday,
+        gender: form.gender,
+        activity_level: form.activity_level,
+        goal: form.goal
+      });
+    } catch (e) {
+      wx.showToast({ title: '参数计算失败，请检查输入', icon: 'none' });
+      return;
+    }
 
     this.setData({ submitting: true });
 
     const app = getApp();
     const openid = app.globalData.openid;
+    if (!openid) {
+      wx.showToast({ title: '用户信息获取失败，请重启', icon: 'none' });
+      this.setData({ submitting: false });
+      return;
+    }
     const db = wx.cloud.database();
 
     const userData = {

@@ -26,11 +26,11 @@ Page({
   },
 
   onLoad() {
-    this.setGreeting();
-    this.setDateStr();
   },
 
   onShow() {
+    this.setGreeting();
+    this.setDateStr();
     this.loadUserInfo();
     this.loadTodayRecords();
   },
@@ -108,6 +108,7 @@ Page({
       });
     }).catch(err => {
       console.error('加载记录失败', err);
+      wx.showToast({ title: '加载失败，请下拉刷新', icon: 'none' });
     });
   },
 
