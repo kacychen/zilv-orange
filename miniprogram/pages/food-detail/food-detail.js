@@ -1,6 +1,5 @@
 const { getToday } = require('../../utils/date');
 const { calcNutrition } = require('../../utils/nutrition');
-const { localDB, serverDate } = require('../../utils/localDB');
 
 Page({
   data: {
@@ -88,6 +87,7 @@ Page({
       return;
     }
 
+    const db = wx.cloud.database();
     const record = {
       date: getToday(),
       meal_type: this.data.mealType,
@@ -98,11 +98,11 @@ Page({
       carbs: parseFloat(f.carbs) || 0,
       fat: parseFloat(f.fat) || 0,
       source: this.data.food ? 'search' : 'manual',
-      created_at: serverDate()
+      created_at: db.serverDate()
     };
 
     wx.showLoading({ title: '保存中...' });
-    localDB.add('meal_records', record)
+    db.collection('meal_records').add({ data: record })
       .then(() => {
         wx.hideLoading();
         wx.showToast({ title: '添加成功', icon: 'success' });
