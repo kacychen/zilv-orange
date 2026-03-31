@@ -1,5 +1,4 @@
 const { calcDailyTarget } = require('../../utils/bmr');
-const { localDB, serverDate, LOCAL_OPENID } = require('../../utils/localDB');
 
 Page({
   data: {
@@ -109,7 +108,8 @@ Page({
     this.setData({ submitting: true });
 
     const app = getApp();
-    const openid = LOCAL_OPENID;
+    const openid = app.globalData.openid;
+    const db = wx.cloud.database();
 
     const userData = {
       _id: openid,
@@ -122,10 +122,10 @@ Page({
       goal: form.goal,
       activity_level: form.activity_level,
       daily_calorie_target: dailyCalorieTarget,
-      created_at: serverDate()
+      created_at: db.serverDate()
     };
 
-    localDB.add('users', userData).then(() => {
+    db.collection('users').add({ data: userData }).then(() => {
       app.globalData.userInfo = userData;
       wx.showToast({ title: '设置成功！', icon: 'success' });
       setTimeout(() => {
