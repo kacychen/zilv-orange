@@ -93,6 +93,9 @@ Page({
         if (pieItems.length > 0) {
           this.drawPieChart(pieItems);
         }
+      })
+      .catch(() => {
+        console.error('加载今日营养素失败');
       });
   },
 

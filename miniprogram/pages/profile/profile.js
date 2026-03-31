@@ -83,6 +83,9 @@ Page({
         }
 
         this.setData({ streak, totalRecordDays: summaries.length });
+      })
+      .catch(() => {
+        console.error('加载连续打卡失败');
       });
   },
 
@@ -94,6 +97,9 @@ Page({
         ...(ACHIEVEMENT_CONFIG[a.type] || { icon: '🏅', name: a.type, desc: '' })
       }));
       this.setData({ achievements });
+    })
+    .catch(() => {
+      console.error('加载成就失败');
     });
   },
 
@@ -169,11 +175,14 @@ Page({
       app.globalData.userInfo = updatedUser;
       wx.hideLoading();
       wx.showToast({ title: '保存成功', icon: 'success' });
+      const newGap = updatedUser.weight - (updatedUser.target_weight || updatedUser.weight);
       this.setData({
         editing: false,
         user: updatedUser,
         goalLabel: GOAL_LABELS[updatedUser.goal],
-        activityLabel: ACTIVITY_LABELS[updatedUser.activity_level]
+        activityLabel: ACTIVITY_LABELS[updatedUser.activity_level],
+        weightGap: newGap,
+        weightGapStr: (newGap > 0 ? '+' : '') + newGap.toFixed(1)
       });
     }).catch(() => {
       wx.hideLoading();

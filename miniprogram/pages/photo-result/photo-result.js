@@ -19,29 +19,31 @@ Page({
   onAmountChange(e) {
     const index = e.currentTarget.dataset.index;
     const newAmount = parseFloat(e.detail.value) || 0;
-    const foods = this.data.foods;
+    const foods = [...this.data.foods];
 
-    // 基于原始比例重新计算
     const food = foods[index];
-    const originalAmount = food.estimated_amount || 100;
+    // Store originals on first edit
+    const originalCal = food._originalCal !== undefined ? food._originalCal : food.calories;
+    const originalProtein = food._originalProtein !== undefined ? food._originalProtein : food.protein;
+    const originalCarbs = food._originalCarbs !== undefined ? food._originalCarbs : food.carbs;
+    const originalFat = food._originalFat !== undefined ? food._originalFat : food.fat;
+    const originalAmount = food._originalAmount !== undefined ? food._originalAmount : (food.estimated_amount || 100);
+
     const ratio = newAmount / originalAmount;
 
     foods[index] = {
       ...food,
       estimated_amount: newAmount,
-      calories: Math.round((food._originalCal || food.calories) * ratio),
-      protein: parseFloat(((food._originalProtein || food.protein) * ratio).toFixed(1)),
-      carbs: parseFloat(((food._originalCarbs || food.carbs) * ratio).toFixed(1)),
-      fat: parseFloat(((food._originalFat || food.fat) * ratio).toFixed(1))
+      calories: Math.round(originalCal * ratio),
+      protein: parseFloat((originalProtein * ratio).toFixed(1)),
+      carbs: parseFloat((originalCarbs * ratio).toFixed(1)),
+      fat: parseFloat((originalFat * ratio).toFixed(1)),
+      _originalCal: originalCal,
+      _originalProtein: originalProtein,
+      _originalCarbs: originalCarbs,
+      _originalFat: originalFat,
+      _originalAmount: originalAmount
     };
-
-    // 存储原始值
-    if (!food._originalCal) {
-      foods[index]._originalCal = food.calories;
-      foods[index]._originalProtein = food.protein;
-      foods[index]._originalCarbs = food.carbs;
-      foods[index]._originalFat = food.fat;
-    }
 
     const totalCalories = foods.reduce((sum, f) => sum + (f.calories || 0), 0);
     this.setData({ foods, totalCalories });
@@ -49,7 +51,7 @@ Page({
 
   removeFood(e) {
     const index = e.currentTarget.dataset.index;
-    const foods = this.data.foods;
+    const foods = [...this.data.foods];
     foods.splice(index, 1);
     const totalCalories = foods.reduce((sum, f) => sum + (f.calories || 0), 0);
     this.setData({ foods, totalCalories });
@@ -60,6 +62,7 @@ Page({
 
     const db = wx.cloud.database();
     const today = getToday();
+    wx.showLoading({ title: '保存中...' });
     const promises = this.data.foods.map(food => {
       return db.collection('meal_records').add({
         data: {
@@ -77,7 +80,6 @@ Page({
       });
     });
 
-    wx.showLoading({ title: '保存中...' });
     Promise.all(promises).then(() => {
       wx.hideLoading();
       wx.showToast({ title: '添加成功', icon: 'success' });
