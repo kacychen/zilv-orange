@@ -1,5 +1,4 @@
 const { getToday } = require('../../utils/date');
-const { localDB, serverDate } = require('../../utils/localDB');
 
 Page({
   data: {
@@ -59,19 +58,22 @@ Page({
   confirmAll() {
     if (this.data.foods.length === 0) return;
 
+    const db = wx.cloud.database();
     const today = getToday();
     const promises = this.data.foods.map(food => {
-      return localDB.add('meal_records', {
-        date: today,
-        meal_type: this.data.mealType,
-        food_name: food.food_name,
-        amount: food.estimated_amount || 100,
-        calories: food.calories,
-        protein: food.protein,
-        carbs: food.carbs,
-        fat: food.fat,
-        source: 'photo',
-        created_at: serverDate()
+      return db.collection('meal_records').add({
+        data: {
+          date: today,
+          meal_type: this.data.mealType,
+          food_name: food.food_name,
+          amount: food.estimated_amount || 100,
+          calories: food.calories,
+          protein: food.protein,
+          carbs: food.carbs,
+          fat: food.fat,
+          source: 'photo',
+          created_at: db.serverDate()
+        }
       });
     });
 
