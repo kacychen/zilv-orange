@@ -6,7 +6,7 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const QWEN_API_KEY = process.env.QWEN_API_KEY || '';
-const QWEN_MODEL = 'qwen-vl-plus';
+const QWEN_MODEL = 'qwen-vl-max';
 const API_TIMEOUT_MS = 15000;
 
 /**
