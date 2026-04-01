@@ -2,8 +2,6 @@
 // 接收食物图片的云存储 fileID，调用通义千问 VL API 识别食物并返回营养数据
 
 const https = require('https');
-const cloud = require('wx-server-sdk');
-cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const QWEN_API_KEY = process.env.QWEN_API_KEY || '';
 const QWEN_MODEL = 'qwen-vl-plus';
