@@ -2,10 +2,22 @@
 // 接收食物图片的云存储 fileID，调用通义千问 VL API 识别食物并返回营养数据
 
 const https = require('https');
+const cloud = require('wx-server-sdk');
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const QWEN_API_KEY = process.env.QWEN_API_KEY || '';
 const QWEN_MODEL = 'qwen-vl-plus';
 const API_TIMEOUT_MS = 15000;
+
+/**
+ * 根据 fileID 扩展名推断 MIME 类型
+ */
+function getMimeType(fileID) {
+  const ext = (fileID.split('.').pop() || '').toLowerCase();
+  const map = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
+                heic: 'image/heic', webp: 'image/webp' };
+  return map[ext] || 'image/jpeg';
+}
 
 /**
  * 将云存储 fileID 下载为 base64
@@ -13,13 +25,18 @@ const API_TIMEOUT_MS = 15000;
  */
 async function downloadAsBase64(fileID) {
   const res = await cloud.downloadFile({ fileID });
+  if (!res.fileContent) throw new Error('文件下载失败或文件不存在');
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  if (res.fileContent.length > MAX_SIZE) {
+    throw new Error('图片过大，请上传 5MB 以内的图片');
+  }
   return res.fileContent.toString('base64');
 }
 
 /**
  * 调用通义千问 VL API
  */
-function callQwen(base64Image) {
+function callQwen(base64Image, fileID) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
       model: QWEN_MODEL,
@@ -29,7 +46,7 @@ function callQwen(base64Image) {
             role: 'user',
             content: [
               {
-                image: `data:image/jpeg;base64,${base64Image}`
+                image: `data:${getMimeType(fileID)};base64,${base64Image}`
               },
               {
                 text: `请分析这张食物图片，识别其中所有食物，以 JSON 数组格式返回，每项包含：
@@ -68,6 +85,10 @@ function callQwen(base64Image) {
       res.on('data', chunk => { data += chunk; });
       res.on('end', () => {
         try {
+          if (res.statusCode !== 200) {
+            reject(new Error(`API 错误 ${res.statusCode}: ${data}`));
+            return;
+          }
           const parsed = JSON.parse(data);
           const text = parsed.output &&
             parsed.output.choices &&
@@ -120,7 +141,7 @@ exports.main = async (event) => {
 
   try {
     const base64Image = await downloadAsBase64(fileID);
-    const foods = await callQwen(base64Image);
+    const foods = await callQwen(base64Image, fileID);
     return { success: true, foods };
   } catch (err) {
     console.error('photoRecognize 失败:', err.message);
