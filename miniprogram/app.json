@@ -27,10 +27,6 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/record/record",
-        "text": "记录"
-      },
-      {
         "pagePath": "pages/analysis/analysis",
         "text": "分析"
       },
