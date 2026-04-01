@@ -110,6 +110,10 @@ function callQwen(base64Image, fileID) {
           }
 
           const foods = JSON.parse(jsonMatch[0]);
+          if (!Array.isArray(foods)) {
+            reject(new Error('识别结果格式异常'));
+            return;
+          }
           resolve(foods);
         } catch (e) {
           reject(e);
@@ -129,9 +133,14 @@ function callQwen(base64Image, fileID) {
 }
 
 exports.main = async (event) => {
+  const wxContext = cloud.getWXContext();
+  if (!wxContext.OPENID) {
+    return { success: false, error: '非法调用', foods: [] };
+  }
+
   const { fileID } = event;
 
-  if (!fileID) {
+  if (typeof fileID !== 'string' || !fileID.trim()) {
     return { success: false, error: '缺少 fileID 参数', foods: [] };
   }
 
