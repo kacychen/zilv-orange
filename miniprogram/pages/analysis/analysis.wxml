@@ -1,75 +1,72 @@
 <view class="container">
-  <!-- 本周卡路里 -->
+  <!-- 时间范围选择 -->
+  <view class="period-tabs">
+    <text class="tab {{period === 'week' ? 'active' : ''}}" bindtap="switchPeriod" data-period="week">本周</text>
+    <text class="tab {{period === 'month' ? 'active' : ''}}" bindtap="switchPeriod" data-period="month">本月</text>
+  </view>
+
+  <!-- 卡路里折线图 -->
   <view class="card">
-    <view class="card-header flex-between">
-      <text class="section-title">本周卡路里</text>
-      <text class="text-secondary">目标 {{calorieTarget}} kcal/天</text>
+    <text class="section-title">卡路里摄入趋势</text>
+    <view class="chart-container">
+      <canvas type="2d" id="calorieChart" class="chart-canvas"></canvas>
     </view>
-    <canvas type="2d" id="lineChart" class="line-chart"></canvas>
     <view class="chart-legend">
       <view class="legend-item">
-        <view class="legend-dot" style="background:#FF7A00"></view>
+        <view class="legend-dot" style="background:#FF7A00;"></view>
         <text class="legend-text">实际摄入</text>
       </view>
       <view class="legend-item">
-        <view class="legend-dot dashed"></view>
-        <text class="legend-text">目标热量</text>
+        <view class="legend-dot" style="background:#E0E0E0;"></view>
+        <text class="legend-text">目标值</text>
       </view>
     </view>
   </view>
 
-  <!-- 统计摘要 -->
-  <view class="card stats-row">
-    <view class="stat-item">
-      <text class="stat-num text-number">{{reachDays}}</text>
-      <text class="stat-desc">近7天达标</text>
-    </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <text class="stat-num text-number">{{avgCalories}}</text>
-      <text class="stat-desc">平均热量(kcal)</text>
-    </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <text class="stat-num text-number">{{totalDays}}</text>
-      <text class="stat-desc">统计天数</text>
-    </view>
-  </view>
-
-  <!-- 今日营养素分布 -->
+  <!-- 营养素分布饼图 -->
   <view class="card">
-    <text class="section-title">今日营养素分布</text>
-
-    <view wx:if="{{pieItems.length > 0}}" class="pie-container">
-      <canvas type="2d" id="pieChart" class="pie-chart"></canvas>
+    <text class="section-title">营养素分布</text>
+    <view class="pie-container">
+      <canvas type="2d" id="nutrientPie" class="pie-canvas"></canvas>
       <view class="pie-legend">
-        <view class="pie-legend-item" wx:for="{{pieItems}}" wx:key="name">
-          <view class="pie-dot" style="background: {{item.color}};"></view>
-          <text class="pie-name">{{item.name}}</text>
-          <text class="pie-percent text-number">{{item.percent}}%</text>
+        <view class="legend-row">
+          <view class="legend-dot" style="background:#FF7A00;"></view>
+          <text class="legend-label">蛋白质</text>
+          <text class="legend-value text-number">{{proteinPercent}}%</text>
+        </view>
+        <view class="legend-row">
+          <view class="legend-dot" style="background:#4CAF50;"></view>
+          <text class="legend-label">碳水</text>
+          <text class="legend-value text-number">{{carbsPercent}}%</text>
+        </view>
+        <view class="legend-row">
+          <view class="legend-dot" style="background:#2196F3;"></view>
+          <text class="legend-label">脂肪</text>
+          <text class="legend-value text-number">{{fatPercent}}%</text>
         </view>
       </view>
     </view>
+  </view>
 
-    <view wx:else class="empty-chart">
-      <text class="empty-text">今日暂无记录</text>
-    </view>
-
-    <view class="nutrient-details">
-      <view class="nutrient-detail-item">
-        <view class="nutrient-dot" style="background:#FF7A00"></view>
-        <text class="nutrient-detail-name">蛋白质</text>
-        <text class="nutrient-detail-val text-number">{{totalProtein}}g</text>
+  <!-- 达标统计 -->
+  <view class="card stats-card">
+    <text class="section-title">达标统计</text>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value text-number text-primary">{{totalDays}}</text>
+        <text class="stat-label">记录天数</text>
       </view>
-      <view class="nutrient-detail-item">
-        <view class="nutrient-dot" style="background:#4CAF50"></view>
-        <text class="nutrient-detail-name">碳水化合物</text>
-        <text class="nutrient-detail-val text-number">{{totalCarbs}}g</text>
+      <view class="stat-item">
+        <text class="stat-value text-number" style="color:#4CAF50;">{{goalDays}}</text>
+        <text class="stat-label">达标天数</text>
       </view>
-      <view class="nutrient-detail-item">
-        <view class="nutrient-dot" style="background:#2196F3"></view>
-        <text class="nutrient-detail-name">脂肪</text>
-        <text class="nutrient-detail-val text-number">{{totalFat}}g</text>
+      <view class="stat-item">
+        <text class="stat-value text-number" style="color:#2196F3;">{{goalRate}}%</text>
+        <text class="stat-label">达标率</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value text-number" style="color:#FF9800;">{{avgCalories}}</text>
+        <text class="stat-label">日均摄入</text>
       </view>
     </view>
   </view>

@@ -1,5 +1,5 @@
 {
-  "miniprogramRoot": "miniprogram/",
+  "miniprogramRoot": "./",
   "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
     "urlCheck": true,
@@ -36,7 +36,7 @@
     "swc": false,
     "disableSWC": true
   },
-  "appid": "wx5bd07f211325df4d",
+  "appid": "wx4eaab31d05df607d",
   "projectname": "zilvchengzi",
   "libVersion": "3.15.1",
   "condition": {},

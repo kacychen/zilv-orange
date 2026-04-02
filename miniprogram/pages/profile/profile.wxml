@@ -52,8 +52,8 @@
       </view>
       <view class="info-item">
         <text class="info-label">差距</text>
-        <text class="info-value text-number {{user.weight - user.target_weight > 0 ? 'text-primary' : ''}}">
-          {{user.weight - user.target_weight > 0 ? '+' : ''}}{{(user.weight - user.target_weight).toFixed(1)}} kg
+        <text class="info-value text-number {{weightGap > 0 ? 'text-primary' : ''}}">
+          {{weightGapStr}} kg
         </text>
       </view>
     </view>
