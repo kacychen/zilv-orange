@@ -1,15 +1,26 @@
 <view class="container">
-  <!-- 时间范围选择 -->
+
+  <!-- Tab 切换 -->
   <view class="period-tabs">
-    <text class="tab {{period === 'week' ? 'active' : ''}}" bindtap="switchPeriod" data-period="week">本周</text>
-    <text class="tab {{period === 'month' ? 'active' : ''}}" bindtap="switchPeriod" data-period="month">本月</text>
+    <text class="tab {{period === 'week' ? 'active' : ''}}"
+          bindtap="switchPeriod" data-period="week">本周</text>
+    <text class="tab {{period === 'month' ? 'active' : ''}}"
+          bindtap="switchPeriod" data-period="month">本月</text>
   </view>
 
-  <!-- 卡路里折线图 -->
+  <!-- 卡路里趋势 -->
   <view class="card">
     <text class="section-title">卡路里摄入趋势</text>
     <view class="chart-container">
-      <canvas type="2d" id="calorieChart" class="chart-canvas"></canvas>
+      <block wx:if="{{hasCalData}}">
+        <canvas wx:if="{{period === 'week'}}"
+                type="2d" id="lineChart" class="chart-canvas"></canvas>
+        <canvas wx:elif="{{period === 'month'}}"
+                type="2d" id="barChart" class="chart-canvas"></canvas>
+      </block>
+      <view wx:else class="empty-chart">
+        <text class="empty-text">暂无记录</text>
+      </view>
     </view>
     <view class="chart-legend">
       <view class="legend-item">
@@ -17,30 +28,34 @@
         <text class="legend-text">实际摄入</text>
       </view>
       <view class="legend-item">
-        <view class="legend-dot" style="background:#E0E0E0;"></view>
+        <view class="legend-dot dashed"></view>
         <text class="legend-text">目标值</text>
       </view>
     </view>
   </view>
 
-  <!-- 营养素分布饼图 -->
+  <!-- 今日营养素分布 -->
   <view class="card">
-    <text class="section-title">营养素分布</text>
+    <text class="section-title">今日营养素分布</text>
     <view class="pie-container">
-      <canvas type="2d" id="nutrientPie" class="pie-canvas"></canvas>
+      <canvas wx:if="{{hasTodayNutrient}}"
+              type="2d" id="pieChart" class="pie-canvas"></canvas>
+      <view wx:else class="empty-pie">
+        <text class="empty-text">今日暂无记录</text>
+      </view>
       <view class="pie-legend">
         <view class="legend-row">
-          <view class="legend-dot" style="background:#FF7A00;"></view>
+          <view class="legend-dot round" style="background:#FF7A00;"></view>
           <text class="legend-label">蛋白质</text>
           <text class="legend-value text-number">{{proteinPercent}}%</text>
         </view>
         <view class="legend-row">
-          <view class="legend-dot" style="background:#4CAF50;"></view>
+          <view class="legend-dot round" style="background:#4CAF50;"></view>
           <text class="legend-label">碳水</text>
           <text class="legend-value text-number">{{carbsPercent}}%</text>
         </view>
         <view class="legend-row">
-          <view class="legend-dot" style="background:#2196F3;"></view>
+          <view class="legend-dot round" style="background:#2196F3;"></view>
           <text class="legend-label">脂肪</text>
           <text class="legend-value text-number">{{fatPercent}}%</text>
         </view>
@@ -70,4 +85,5 @@
       </view>
     </view>
   </view>
+
 </view>
