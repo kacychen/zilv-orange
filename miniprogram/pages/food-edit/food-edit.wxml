@@ -64,6 +64,6 @@
   </view>
 
   <view class="btn-wrap">
-    <button class="save-btn" bindtap="onSave" loading="{{saving}}">保存</button>
+    <button class="save-btn" bindtap="onSave" loading="{{saving}}" disabled="{{saving}}">保存</button>
   </view>
 </view>

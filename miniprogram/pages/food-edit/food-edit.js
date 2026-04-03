@@ -33,11 +33,11 @@ Page({
     db.collection('meal_records').doc(id).get().then(res => {
       wx.hideLoading();
       const r = res.data;
-      const amount = String(r.amount || '');
-      const calories = String(r.calories || '');
-      const protein = String(r.protein || '');
-      const carbs = String(r.carbs || '');
-      const fat = String(r.fat || '');
+      const amount = r.amount != null ? String(r.amount) : '';
+      const calories = r.calories != null ? String(r.calories) : '';
+      const protein = r.protein != null ? String(r.protein) : '';
+      const carbs = r.carbs != null ? String(r.carbs) : '';
+      const fat = r.fat != null ? String(r.fat) : '';
       this.setData({
         foodName: r.food_name || '',
         amount,
@@ -69,7 +69,7 @@ Page({
   onAmountBlur() {
     const newAmount = parseFloat(this.data.amount);
     const oldAmount = this.data._originalAmount;
-    if (!newAmount || newAmount <= 0 || newAmount === oldAmount) return;
+    if (!newAmount || newAmount <= 0 || !oldAmount || oldAmount <= 0 || newAmount === oldAmount) return;
 
     wx.showModal({
       title: '重算营养数据',
