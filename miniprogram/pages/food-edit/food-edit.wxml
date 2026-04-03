@@ -1,0 +1,69 @@
+<view class="container">
+  <view class="form-card">
+    <view class="form-item">
+      <text class="label">食物名称</text>
+      <input
+        class="input"
+        value="{{foodName}}"
+        placeholder="请输入食物名称"
+        bindinput="onInputFoodName"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">克重 (g)</text>
+      <input
+        class="input"
+        type="digit"
+        value="{{amount}}"
+        placeholder="请输入克重"
+        bindinput="onInputAmount"
+        bindblur="onAmountBlur"
+      />
+    </view>
+    <view class="divider"></view>
+    <view class="form-item">
+      <text class="label">卡路里 (kcal)</text>
+      <input
+        class="input"
+        type="digit"
+        value="{{calories}}"
+        placeholder="请输入卡路里"
+        bindinput="onInputCalories"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">蛋白质 (g)</text>
+      <input
+        class="input"
+        type="digit"
+        value="{{protein}}"
+        placeholder="请输入蛋白质"
+        bindinput="onInputProtein"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">碳水化合物 (g)</text>
+      <input
+        class="input"
+        type="digit"
+        value="{{carbs}}"
+        placeholder="请输入碳水化合物"
+        bindinput="onInputCarbs"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">脂肪 (g)</text>
+      <input
+        class="input"
+        type="digit"
+        value="{{fat}}"
+        placeholder="请输入脂肪"
+        bindinput="onInputFat"
+      />
+    </view>
+  </view>
+
+  <view class="btn-wrap">
+    <button class="save-btn" bindtap="onSave" loading="{{saving}}">保存</button>
+  </view>
+</view>

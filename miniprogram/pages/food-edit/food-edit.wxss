@@ -1,0 +1,59 @@
+.container {
+  padding: 24rpx;
+  background: #FFF3E0;
+  min-height: 100vh;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 0 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  width: 220rpx;
+  font-size: 28rpx;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+  text-align: right;
+}
+
+.divider {
+  height: 12rpx;
+  background: #FFF3E0;
+  margin: 0 -24rpx;
+}
+
+.btn-wrap {
+  margin-top: 48rpx;
+  padding: 0 24rpx;
+}
+
+.save-btn {
+  background: #FF7A00;
+  color: #fff;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  height: 96rpx;
+  line-height: 96rpx;
+  border: none;
+}
