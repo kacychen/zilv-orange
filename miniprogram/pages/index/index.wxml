@@ -42,6 +42,8 @@
     calories="{{breakfastCal}}"
     foods="{{breakfastFoods}}"
     bind:add="onAddMeal"
+    bind:foodDeleted="onFoodDeleted"
+    bind:editFood="onEditFood"
   ></meal-card>
   <meal-card
     mealType="lunch"
@@ -51,6 +53,8 @@
     calories="{{lunchCal}}"
     foods="{{lunchFoods}}"
     bind:add="onAddMeal"
+    bind:foodDeleted="onFoodDeleted"
+    bind:editFood="onEditFood"
   ></meal-card>
   <meal-card
     mealType="dinner"
@@ -60,6 +64,8 @@
     calories="{{dinnerCal}}"
     foods="{{dinnerFoods}}"
     bind:add="onAddMeal"
+    bind:foodDeleted="onFoodDeleted"
+    bind:editFood="onEditFood"
   ></meal-card>
   <meal-card
     mealType="snack"
@@ -69,5 +75,7 @@
     calories="{{snackCal}}"
     foods="{{snackFoods}}"
     bind:add="onAddMeal"
+    bind:foodDeleted="onFoodDeleted"
+    bind:editFood="onEditFood"
   ></meal-card>
 </view>

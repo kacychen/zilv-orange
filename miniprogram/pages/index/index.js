@@ -117,5 +117,36 @@ Page({
     wx.navigateTo({
       url: `/pages/record/record?mealType=${mealType}`
     });
-  }
+  },
+
+  onFoodDeleted(e) {
+    const { _id, mealType, calories, protein, carbs, fat } = e.detail;
+    const foodsKey = `${mealType}Foods`;
+    const calKey = `${mealType}Cal`;
+
+    const newFoods = (this.data[foodsKey] || []).filter(f => f._id !== _id);
+    const newCal = newFoods.reduce((sum, f) => sum + (f.calories || 0), 0);
+
+    const newTotalCalories = this.data.totalCalories - (calories || 0);
+    const newTotalProtein = parseFloat((this.data.totalProtein - (protein || 0)).toFixed(1));
+    const newTotalCarbs = parseFloat((this.data.totalCarbs - (carbs || 0)).toFixed(1));
+    const newTotalFat = parseFloat((this.data.totalFat - (fat || 0)).toFixed(1));
+
+    this.setData({
+      [foodsKey]: newFoods,
+      [calKey]: newCal,
+      totalCalories: Math.max(0, newTotalCalories),
+      totalProtein: Math.max(0, newTotalProtein),
+      totalCarbs: Math.max(0, newTotalCarbs),
+      totalFat: Math.max(0, newTotalFat),
+      remaining: this.data.calorieTarget - Math.max(0, newTotalCalories)
+    });
+  },
+
+  onEditFood(e) {
+    const { id } = e.detail;
+    wx.navigateTo({
+      url: `/pages/food-edit/food-edit?id=${id}`
+    });
+  },
 });
