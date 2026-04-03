@@ -91,3 +91,49 @@
   font-size: 24rpx;
   color: #CCC;
 }
+
+/* 左滑删除 */
+.food-item-wrap {
+  overflow: hidden;
+  position: relative;
+}
+
+.slide-area {
+  width: calc(100% + 160rpx);
+  height: 72rpx;
+  position: relative;
+}
+
+.slide-view {
+  width: calc(100% - 160rpx);
+  height: 72rpx;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.food-item-inner {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.delete-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 160rpx;
+  height: 72rpx;
+  background: #FF4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-text {
+  color: #fff;
+  font-size: 28rpx;
+}

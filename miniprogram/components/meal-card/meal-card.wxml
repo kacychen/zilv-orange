@@ -1,5 +1,5 @@
-<view class="meal-card" bindtap="onTap">
-  <view class="meal-header">
+<view class="meal-card">
+  <view class="meal-header" bindtap="onTap">
     <view class="meal-icon-wrap" style="background: {{iconBg}};">
       <text class="meal-icon">{{icon}}</text>
     </view>
@@ -11,12 +11,31 @@
       <text class="add-btn">+</text>
     </view>
   </view>
+
   <view class="meal-foods" wx:if="{{foods.length > 0}}">
-    <view class="food-item" wx:for="{{foods}}" wx:key="index">
-      <text class="food-name">{{item.food_name}}</text>
-      <text class="food-cal text-number">{{item.calories}} kcal</text>
+    <view class="food-item-wrap" wx:for="{{foods}}" wx:key="_id">
+      <movable-area class="slide-area">
+        <movable-view
+          class="slide-view"
+          direction="horizontal"
+          x="{{item._slideX || 0}}"
+          damping="50"
+          bindchange="onSlideChange"
+          data-index="{{index}}"
+          bindtouchstart="onTouchStart"
+        >
+          <view class="food-item-inner" bindtap="onEditFood" data-index="{{index}}">
+            <text class="food-name">{{item.food_name}}</text>
+            <text class="food-cal text-number">{{item.calories}} kcal</text>
+          </view>
+        </movable-view>
+        <view class="delete-btn" bindtap="onDeleteFood" data-index="{{index}}">
+          <text class="delete-text">删除</text>
+        </view>
+      </movable-area>
     </view>
   </view>
+
   <view class="meal-empty" wx:else>
     <text class="empty-text">点击添加食物</text>
   </view>
