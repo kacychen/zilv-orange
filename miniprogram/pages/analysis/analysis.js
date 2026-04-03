@@ -2,34 +2,45 @@ const { getRecentDays, getShortDate } = require('../../utils/date');
 
 Page({
   data: {
-    weekDays: [],          // 最近7天日期标签 ['3/24', '3/25', ...]
-    weekCalories: [],      // 每天卡路里 [1200, 1600, ...]
+    period: 'week',
+    weekDays: [],
+    weekCalories: [],
     calorieTarget: 1800,
     avgCalories: 0,
-    reachDays: 0,          // 达标天数
-    totalDays: 7,
-    // 今日营养素分布
+    totalDays: 0,
+    goalDays: 0,
+    goalRate: 0,
+    hasCalData: false,
     totalProtein: 0,
     totalCarbs: 0,
     totalFat: 0,
-    // Canvas 相关
-    chartWidth: 680,
-    chartHeight: 300,
-    pieItems: []
+    proteinPercent: 0,
+    carbsPercent: 0,
+    fatPercent: 0,
+    hasTodayNutrient: false
   },
 
   onShow() {
     this.loadData();
   },
 
+  switchPeriod(e) {
+    const period = e.currentTarget.dataset.period;
+    if (period === this.data.period) return;
+    this.setData({ period }, () => {
+      this.loadData();
+    });
+  },
+
   loadData() {
     const app = getApp();
     const target = app.globalData.userInfo
-      ? app.globalData.userInfo.daily_calorie_target || 1800
+      ? (app.globalData.userInfo.daily_calorie_target || 1800)
       : 1800;
     this.setData({ calorieTarget: target });
 
-    const days = getRecentDays(7);
+    const n = this.data.period === 'week' ? 7 : 30;
+    const days = getRecentDays(n);
 
     const db = wx.cloud.database();
     const _ = db.command;
@@ -38,61 +49,83 @@ Page({
       .get()
       .then(res => {
         const summaryMap = {};
-        res.data.forEach(s => {
-          summaryMap[s.date] = s;
-        });
+        res.data.forEach(s => { summaryMap[s.date] = s; });
 
         const weekDays = days.map(d => getShortDate(d));
-        const weekCalories = days.map(d => (summaryMap[d] ? summaryMap[d].total_calories : 0));
-        const reachDays = days.filter(d => summaryMap[d] && summaryMap[d].goal_reached).length;
+        const weekCalories = days.map(d =>
+          summaryMap[d] ? (summaryMap[d].total_calories || 0) : 0
+        );
+        const goalDays = days.filter(
+          d => summaryMap[d] && summaryMap[d].goal_reached
+        ).length;
+        const totalDays = weekCalories.filter(c => c > 0).length;
         const totalCal = weekCalories.reduce((a, b) => a + b, 0);
-        const nonZeroDays = weekCalories.filter(c => c > 0).length;
-        const avgCalories = nonZeroDays > 0 ? Math.round(totalCal / nonZeroDays) : 0;
+        const avgCalories = totalDays > 0 ? Math.round(totalCal / totalDays) : 0;
+        const goalRate = totalDays > 0 ? Math.round(goalDays / totalDays * 100) : 0;
+        const hasCalData = weekCalories.some(c => c > 0);
 
-        this.setData({
-          weekDays,
-          weekCalories,
-          reachDays,
-          avgCalories
-        });
+        const period = this.data.period;
+        this.setData(
+          { weekDays, weekCalories, goalDays, totalDays, avgCalories, goalRate, hasCalData },
+          () => {
+            if (!hasCalData) return;
+            if (period === 'week') {
+              this.drawLineChart(weekCalories, target);
+            } else {
+              this.drawBarChart(weekCalories, days, summaryMap, target);
+            }
+          }
+        );
 
-        this.drawLineChart(weekCalories, target);
-
-        // 加载今日营养素
         this.loadTodayNutrients();
       })
       .catch(() => {
-        const weekDays = getRecentDays(7).map(d => getShortDate(d));
-        this.setData({ weekDays, weekCalories: new Array(7).fill(0) });
+        const n2 = this.data.period === 'week' ? 7 : 30;
+        const weekDays = getRecentDays(n2).map(d => getShortDate(d));
+        this.setData({ weekDays, weekCalories: new Array(n2).fill(0), hasCalData: false });
       });
   },
 
   loadTodayNutrients() {
     const today = getRecentDays(1)[0];
-
     const db = wx.cloud.database();
     db.collection('meal_records')
       .where({ date: today })
       .get()
       .then(res => {
         const records = res.data;
-        const totalProtein = parseFloat(records.reduce((s, r) => s + (r.protein || 0), 0).toFixed(1));
-        const totalCarbs = parseFloat(records.reduce((s, r) => s + (r.carbs || 0), 0).toFixed(1));
-        const totalFat = parseFloat(records.reduce((s, r) => s + (r.fat || 0), 0).toFixed(1));
-
-        this.setData({ totalProtein, totalCarbs, totalFat });
+        const totalProtein = parseFloat(
+          records.reduce((s, r) => s + (r.protein || 0), 0).toFixed(1)
+        );
+        const totalCarbs = parseFloat(
+          records.reduce((s, r) => s + (r.carbs || 0), 0).toFixed(1)
+        );
+        const totalFat = parseFloat(
+          records.reduce((s, r) => s + (r.fat || 0), 0).toFixed(1)
+        );
 
         const total = totalProtein * 4 + totalCarbs * 4 + totalFat * 9;
-        const pieItems = total > 0 ? [
-          { name: '蛋白质', value: totalProtein * 4, color: '#FF7A00', percent: Math.round(totalProtein * 4 / total * 100) },
-          { name: '碳水', value: totalCarbs * 4, color: '#4CAF50', percent: Math.round(totalCarbs * 4 / total * 100) },
-          { name: '脂肪', value: totalFat * 9, color: '#2196F3', percent: Math.round(totalFat * 9 / total * 100) }
+        const hasTodayNutrient = total > 0;
+        const proteinPercent = hasTodayNutrient
+          ? Math.round(totalProtein * 4 / total * 100) : 0;
+        const carbsPercent = hasTodayNutrient
+          ? Math.round(totalCarbs * 4 / total * 100) : 0;
+        const fatPercent = hasTodayNutrient
+          ? Math.round(totalFat * 9 / total * 100) : 0;
+
+        const pieItems = hasTodayNutrient ? [
+          { name: '蛋白质', value: totalProtein * 4, color: '#FF7A00', percent: proteinPercent },
+          { name: '碳水',   value: totalCarbs * 4,   color: '#4CAF50', percent: carbsPercent },
+          { name: '脂肪',   value: totalFat * 9,     color: '#2196F3', percent: fatPercent }
         ] : [];
 
-        this.setData({ pieItems });
-        if (pieItems.length > 0) {
-          this.drawPieChart(pieItems);
-        }
+        this.setData(
+          { totalProtein, totalCarbs, totalFat,
+            proteinPercent, carbsPercent, fatPercent, hasTodayNutrient },
+          () => {
+            if (hasTodayNutrient) this.drawPieChart(pieItems);
+          }
+        );
       })
       .catch(() => {
         console.error('加载今日营养素失败');
@@ -104,7 +137,7 @@ Page({
     query.select('#lineChart')
       .fields({ node: true, size: true })
       .exec(res => {
-        if (!res || !res[0]) return;
+        if (!res || !res[0] || !res[0].node) return;
         const canvas = res[0].node;
         const ctx = canvas.getContext('2d');
         const dpr = wx.getSystemInfoSync().pixelRatio;
@@ -114,19 +147,15 @@ Page({
         canvas.height = H * dpr;
         ctx.scale(dpr, dpr);
 
-        const padLeft = 50;
-        const padRight = 20;
-        const padTop = 20;
-        const padBottom = 40;
+        const padLeft = 50, padRight = 20, padTop = 20, padBottom = 40;
         const chartW = W - padLeft - padRight;
         const chartH = H - padTop - padBottom;
 
         ctx.clearRect(0, 0, W, H);
 
-        // 找最大值
         const maxVal = Math.max(...calories, target) * 1.2 || 2200;
 
-        // 背景网格
+        // 背景网格 + Y轴标签
         ctx.strokeStyle = '#F0F0F0';
         ctx.lineWidth = 1;
         for (let i = 0; i <= 4; i++) {
@@ -135,15 +164,13 @@ Page({
           ctx.moveTo(padLeft, y);
           ctx.lineTo(padLeft + chartW, y);
           ctx.stroke();
-
-          // Y 轴标签
           ctx.fillStyle = '#BDBDBD';
           ctx.font = '20px sans-serif';
           ctx.textAlign = 'right';
           ctx.fillText(Math.round(maxVal * i / 4), padLeft - 6, y + 5);
         }
 
-        // 目标线
+        // 目标线（虚线）
         const targetY = padTop + chartH - (target / maxVal) * chartH;
         ctx.strokeStyle = '#FFCCAA';
         ctx.lineWidth = 2;
@@ -154,9 +181,10 @@ Page({
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // 折线
+        // 折线点坐标
+        const len = calories.length;
         const points = calories.map((c, i) => ({
-          x: padLeft + (i / (calories.length - 1)) * chartW,
+          x: padLeft + (len > 1 ? (i / (len - 1)) * chartW : chartW / 2),
           y: padTop + chartH - (c / maxVal) * chartH
         }));
 
@@ -164,7 +192,7 @@ Page({
         ctx.beginPath();
         ctx.moveTo(points[0].x, padTop + chartH);
         points.forEach(p => ctx.lineTo(p.x, p.y));
-        ctx.lineTo(points[points.length - 1].x, padTop + chartH);
+        ctx.lineTo(points[len - 1].x, padTop + chartH);
         ctx.closePath();
         const gradient = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
         gradient.addColorStop(0, 'rgba(255,122,0,0.25)');
@@ -172,7 +200,7 @@ Page({
         ctx.fillStyle = gradient;
         ctx.fill();
 
-        // 折线本体
+        // 折线
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         points.forEach(p => ctx.lineTo(p.x, p.y));
@@ -192,7 +220,7 @@ Page({
           ctx.stroke();
         });
 
-        // X 轴标签
+        // X轴标签
         const weekDays = this.data.weekDays;
         ctx.fillStyle = '#BDBDBD';
         ctx.font = '20px sans-serif';
@@ -203,12 +231,94 @@ Page({
       });
   },
 
+  drawBarChart(calories, days, summaryMap, target) {
+    const query = this.createSelectorQuery();
+    query.select('#barChart')
+      .fields({ node: true, size: true })
+      .exec(res => {
+        if (!res || !res[0] || !res[0].node) return;
+        const canvas = res[0].node;
+        const ctx = canvas.getContext('2d');
+        const dpr = wx.getSystemInfoSync().pixelRatio;
+        const W = res[0].width;
+        const H = res[0].height;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        ctx.scale(dpr, dpr);
+
+        const padLeft = 50, padRight = 10, padTop = 20, padBottom = 40;
+        const chartW = W - padLeft - padRight;
+        const chartH = H - padTop - padBottom;
+        const n = calories.length;
+
+        ctx.clearRect(0, 0, W, H);
+
+        const maxVal = Math.max(...calories, target) * 1.2 || 2200;
+
+        // 背景网格 + Y轴标签
+        ctx.strokeStyle = '#F0F0F0';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const y = padTop + chartH - (chartH * i / 4);
+          ctx.beginPath();
+          ctx.moveTo(padLeft, y);
+          ctx.lineTo(padLeft + chartW, y);
+          ctx.stroke();
+          ctx.fillStyle = '#BDBDBD';
+          ctx.font = '18px sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText(Math.round(maxVal * i / 4), padLeft - 6, y + 5);
+        }
+
+        // 目标线（虚线）
+        const targetY = padTop + chartH - (target / maxVal) * chartH;
+        ctx.strokeStyle = '#FFCCAA';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 4]);
+        ctx.beginPath();
+        ctx.moveTo(padLeft, targetY);
+        ctx.lineTo(padLeft + chartW, targetY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 柱子
+        const gap = chartW / n;
+        const barW = Math.max(4, gap * 0.6);
+        calories.forEach((c, i) => {
+          const barH = (c / maxVal) * chartH;
+          const x = padLeft + gap * i + (gap - barW) / 2;
+          const y = padTop + chartH - barH;
+          const reached = summaryMap[days[i]] && summaryMap[days[i]].goal_reached;
+          ctx.fillStyle = c > 0 ? (reached ? '#FF7A00' : '#FFCCAA') : '#F5F5F5';
+          ctx.beginPath();
+          if (ctx.roundRect && barH > 0) {
+            ctx.roundRect(x, y, barW, barH, [3, 3, 0, 0]);
+          } else {
+            ctx.rect(x, y, barW, Math.max(barH, 1));
+          }
+          ctx.fill();
+        });
+
+        // X轴标签：每5天显示一次，最后一天也显示
+        const weekDays = this.data.weekDays;
+        ctx.fillStyle = '#BDBDBD';
+        ctx.font = '18px sans-serif';
+        ctx.textAlign = 'center';
+        calories.forEach((_, i) => {
+          if (i % 5 === 0 || i === n - 1) {
+            const x = padLeft + gap * i + gap / 2;
+            ctx.fillText(weekDays[i] || '', x, H - 8);
+          }
+        });
+      });
+  },
+
   drawPieChart(pieItems) {
     const query = this.createSelectorQuery();
     query.select('#pieChart')
       .fields({ node: true, size: true })
       .exec(res => {
-        if (!res || !res[0]) return;
+        if (!res || !res[0] || !res[0].node) return;
         const canvas = res[0].node;
         const ctx = canvas.getContext('2d');
         const dpr = wx.getSystemInfoSync().pixelRatio;
@@ -222,27 +332,24 @@ Page({
 
         const cx = W / 2;
         const cy = H / 2;
-        const radius = Math.min(W, H) / 2 - 20;
+        const radius = Math.min(W, H) / 2 - 10;
         const innerRadius = radius * 0.55;
-
-        let startAngle = -Math.PI / 2;
         const total = pieItems.reduce((s, item) => s + item.value, 0);
 
+        let startAngle = -Math.PI / 2;
         pieItems.forEach(item => {
           const slice = (item.value / total) * Math.PI * 2;
           const endAngle = startAngle + slice;
-
           ctx.beginPath();
           ctx.moveTo(cx, cy);
           ctx.arc(cx, cy, radius, startAngle, endAngle);
           ctx.closePath();
           ctx.fillStyle = item.color;
           ctx.fill();
-
           startAngle = endAngle;
         });
 
-        // 内圆挖空
+        // 内圆挖空（甜甜圈效果）
         ctx.beginPath();
         ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2);
         ctx.fillStyle = '#fff';
