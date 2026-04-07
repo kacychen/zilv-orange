@@ -22,7 +22,11 @@ Component({
       query.select('#calorieRing')
         .fields({ node: true, size: true })
         .exec((res) => {
-          if (!res[0]) return;
+          if (!res[0] || !res[0].node) return;
+          if (res[0].width === 0) {
+            setTimeout(() => this.drawRing(), 50);
+            return;
+          }
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
           const dpr = wx.getSystemInfoSync().pixelRatio;
