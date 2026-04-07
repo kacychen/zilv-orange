@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "water-wave": "/components/water-wave/water-wave"
+  },
+  "navigationBarTitleText": "饮水记录",
+  "navigationBarBackgroundColor": "#1565c0",
+  "navigationBarTextStyle": "white"
+}

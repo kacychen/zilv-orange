@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/record/record",
     "pages/analysis/analysis",
+    "pages/water/water",
     "pages/profile/profile",
     "pages/food-search/food-search",
     "pages/photo-result/photo-result",
@@ -30,6 +31,10 @@
       {
         "pagePath": "pages/analysis/analysis",
         "text": "分析"
+      },
+      {
+        "pagePath": "pages/water/water",
+        "text": "饮水"
       },
       {
         "pagePath": "pages/profile/profile",
