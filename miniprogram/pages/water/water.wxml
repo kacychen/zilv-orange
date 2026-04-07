@@ -1,3 +1,3 @@
 <view class="container">
-  <text>饮水页面</text>
+  <water-wave amount="{{totalAmount}}" goal="{{waterGoal}}" percent="{{percent}}"></water-wave>
 </view>

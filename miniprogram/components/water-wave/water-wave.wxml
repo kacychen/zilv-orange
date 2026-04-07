@@ -1,0 +1,39 @@
+<view class="wave-container" style="background: linear-gradient(180deg, #1565c0 0%, #1976d2 {{100 - percent}}%, #42a5f5 100%);">
+  <!-- 顶部文字信息 -->
+  <view class="header-info">
+    <text class="amount-label">今日饮水</text>
+    <view class="amount-row">
+      <text class="amount-num">{{amount}}</text>
+      <text class="amount-unit"> ml</text>
+    </view>
+    <text class="goal-text">目标 {{goal}}ml · 还差 {{left > 0 ? left : 0}}ml</text>
+  </view>
+
+  <!-- 双层波浪 -->
+  <view class="wave-wrap">
+    <view class="wave wave1"></view>
+    <view class="wave wave2"></view>
+  </view>
+
+  <!-- SVG 圆环进度（叠在波浪上） -->
+  <view class="ring-area">
+    <view class="ring-wrap">
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <circle class="ring-bg" cx="45" cy="45" r="38" fill="none" stroke="#c8e6ff" stroke-width="7"/>
+        <circle
+          class="ring-fill"
+          cx="45" cy="45" r="38"
+          fill="none"
+          stroke="#ffffff"
+          stroke-width="7"
+          stroke-linecap="round"
+          style="stroke-dasharray: 238.76; stroke-dashoffset: {{238.76 - 238.76 * percent / 100}}; transform: rotate(-90deg); transform-origin: 45px 45px;"
+        />
+      </svg>
+      <view class="ring-label">
+        <text class="ring-pct">{{percent}}%</text>
+        <text class="ring-sub">完成</text>
+      </view>
+    </view>
+  </view>
+</view>
