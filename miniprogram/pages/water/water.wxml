@@ -1,3 +1,123 @@
-<view class="container">
-  <water-wave amount="{{totalAmount}}" goal="{{waterGoal}}" percent="{{percent}}"></water-wave>
+<view class="page-wrap">
+  <!-- 顶部波浪组件 -->
+  <water-wave
+    amount="{{totalAmount}}"
+    goal="{{waterGoal}}"
+    percent="{{percent}}"
+  ></water-wave>
+
+  <!-- 统计小卡 -->
+  <view class="stats-row">
+    <view class="stat-card">
+      <text class="stat-val">{{cupCount}}</text>
+      <text class="stat-label">今日杯数</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-val">{{streakDays}}</text>
+      <text class="stat-label">连续达标天</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-val">{{yesterdayAmount}}</text>
+      <text class="stat-label">昨日 ml</text>
+    </view>
+  </view>
+
+  <!-- 快捷记录 -->
+  <view class="section-title">快捷记录</view>
+  <view class="quick-row">
+    <view
+      class="quick-btn"
+      wx:for="{{quickList}}"
+      wx:key="type_name"
+      data-item="{{item}}"
+      bindtap="onQuickAdd"
+    >
+      <text class="quick-icon">{{item.icon}}</text>
+      <text class="quick-ml">{{item.amount}}ml</text>
+      <text class="quick-name">{{item.type_name}}</text>
+    </view>
+  </view>
+
+  <!-- 自定义输入 -->
+  <view class="custom-row">
+    <input
+      class="custom-input"
+      type="number"
+      placeholder="自定义 ml"
+      value="{{customAmount}}"
+      bindinput="onCustomInput"
+    />
+    <view class="custom-add-btn" bindtap="onCustomAdd">
+      <text class="custom-add-text">+ 记录</text>
+    </view>
+  </view>
+
+  <!-- 今日时间线 -->
+  <view class="section-title">今日记录</view>
+  <view class="timeline" wx:if="{{records.length > 0}}">
+    <view
+      class="tl-item-wrap"
+      wx:for="{{records}}"
+      wx:key="_id"
+      data-index="{{index}}"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+    >
+      <view class="tl-slide-inner" style="transform: translateX({{item._slideX || 0}}rpx);">
+        <view class="tl-item">
+          <view class="tl-dot">
+            <text class="tl-dot-icon">{{item.icon}}</text>
+          </view>
+          <view class="tl-info">
+            <text class="tl-name">{{item.type_name}}</text>
+            <text class="tl-time">{{item.timeStr}}</text>
+          </view>
+          <text class="tl-amount">{{item.amount}}ml</text>
+        </view>
+        <view class="tl-delete-btn" bindtap="onDeleteRecord" data-index="{{index}}">
+          <text class="tl-delete-text">删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="timeline-empty" wx:else>
+    <text class="empty-text">今天还没有记录，喝点水吧 💧</text>
+  </view>
+</view>
+
+<!-- 首次使用目标设置弹窗 -->
+<view class="modal-mask" wx:if="{{showGoalModal}}" bindtap="onMaskTap">
+  <view class="modal-box" catchtap="">
+    <text class="modal-title">设置每日饮水目标</text>
+    <text class="modal-desc">输入体重，我们帮你推算推荐量</text>
+    <view class="modal-row">
+      <text class="modal-label">体重（kg）</text>
+      <input
+        class="modal-input"
+        type="number"
+        placeholder="如：65"
+        value="{{weightInput}}"
+        bindinput="onWeightInput"
+      />
+    </view>
+    <view class="modal-row">
+      <text class="modal-label">每日目标（ml）</text>
+      <input
+        class="modal-input"
+        type="number"
+        placeholder="推荐值将自动填入"
+        value="{{goalInput}}"
+        bindinput="onGoalInput"
+      />
+    </view>
+    <view class="modal-btns">
+      <view class="modal-btn modal-btn-cancel" bindtap="onGoalCancel">
+        <text>使用默认 2000ml</text>
+      </view>
+      <view class="modal-btn modal-btn-confirm" bindtap="onGoalConfirm">
+        <text>确认</text>
+      </view>
+    </view>
+  </view>
 </view>
