@@ -27,7 +27,8 @@
           stroke="#ffffff"
           stroke-width="7"
           stroke-linecap="round"
-          style="stroke-dasharray: 238.76; stroke-dashoffset: {{238.76 - 238.76 * percent / 100}}; transform: rotate(-90deg); transform-origin: 45px 45px;"
+          transform="rotate(-90 45 45)"
+          style="stroke-dasharray: 238.76; stroke-dashoffset: {{238.76 - 238.76 * percent / 100}};"
         />
       </svg>
       <view class="ring-label">

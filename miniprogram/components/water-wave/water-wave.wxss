@@ -109,13 +109,13 @@
 
 .ring-pct {
   display: block;
-  font-size: 22px;
+  font-size: 44rpx;
   font-weight: 700;
   color: #1565c0;
 }
 
 .ring-sub {
   display: block;
-  font-size: 10px;
+  font-size: 22rpx;
   color: #999;
 }
