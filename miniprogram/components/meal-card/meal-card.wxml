@@ -13,26 +13,24 @@
   </view>
 
   <view class="meal-foods" wx:if="{{foods.length > 0}}">
-    <view class="food-item-wrap" wx:for="{{foods}}" wx:key="_id">
-      <movable-area class="slide-area">
-        <movable-view
-          class="slide-view"
-          direction="horizontal"
-          x="{{item._slideX || 0}}"
-          damping="50"
-          bindchange="onSlideChange"
-          data-index="{{index}}"
-          bindtouchstart="onTouchStart"
-        >
-          <view class="food-item-inner" bindtap="onEditFood" data-index="{{index}}">
-            <text class="food-name">{{item.food_name}}</text>
-            <text class="food-cal text-number">{{item.calories}} kcal</text>
-          </view>
-        </movable-view>
+    <view
+      class="food-item-wrap"
+      wx:for="{{foods}}"
+      wx:key="_id"
+      data-index="{{index}}"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+    >
+      <view class="slide-inner" style="transform: translateX({{item._slideX || 0}}rpx);">
+        <view class="food-item-inner" bindtap="onEditFood" data-index="{{index}}">
+          <text class="food-name">{{item.food_name}}</text>
+          <text class="food-cal text-number">{{item.calories}} kcal</text>
+        </view>
         <view class="delete-btn" bindtap="onDeleteFood" data-index="{{index}}">
           <text class="delete-text">删除</text>
         </view>
-      </movable-area>
+      </view>
     </view>
   </view>
 
