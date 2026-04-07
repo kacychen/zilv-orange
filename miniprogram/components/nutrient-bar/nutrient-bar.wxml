@@ -4,6 +4,6 @@
     <text class="nutrient-value text-number">{{current}}g / {{target}}g</text>
   </view>
   <view class="bar-bg">
-    <view class="bar-fill" style="width: {{percent}}%; background: {{color}};"></view>
+    <view class="bar-fill" style="transform: scaleX({{percent / 100}}); background: {{color}};"></view>
   </view>
 </view>
