@@ -41,8 +41,12 @@ Page({
   },
 
   onLoad() {
-    const { windowWidth } = wx.getSystemInfoSync();
-    this._rpxRatio = 750 / windowWidth;
+    try {
+      const { windowWidth } = wx.getSystemInfoSync();
+      this._rpxRatio = windowWidth > 0 ? 750 / windowWidth : 1;
+    } catch (e) {
+      this._rpxRatio = 1; // fallback：滑动功能降级但不崩溃
+    }
   },
 
   onShow() {
@@ -238,7 +242,7 @@ Page({
     // #4 — _touchIndex 已在 onTouchStart 中 parseInt，此处直接使用
     const index = this._touchIndex;
     const currentX = this.data.records[index]._slideX || 0;
-    let newX = currentX + dx * this._rpxRatio;
+    let newX = currentX + dx * (this._rpxRatio || 1);
     newX = Math.max(-160, Math.min(0, newX));
 
     // #2 — 使用键路径 setData，避免全量数组更新导致帧率下降
@@ -298,7 +302,7 @@ Page({
         .filter((_, i) => i !== index)
         .map(r => ({ ...r, _slideX: 0 }));
       const totalAmount = Math.max(this.data.totalAmount - record.amount, 0);
-      const percent = Math.min(Math.round(Math.max(totalAmount, 0) / this.data.waterGoal * 100), 100);
+      const percent = Math.min(Math.round(totalAmount / this.data.waterGoal * 100), 100);
       const cupCount = Math.max(this.data.cupCount - 1, 0);
       this.setData({ records, totalAmount, percent, cupCount, slideIndex: -1 });
     } catch (err) {
