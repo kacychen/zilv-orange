@@ -65,22 +65,6 @@
   border-top: 1rpx solid #F5F5F5;
 }
 
-.food-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 8rpx 0;
-}
-
-.food-name {
-  font-size: 26rpx;
-  color: #666;
-}
-
-.food-cal {
-  font-size: 24rpx;
-  color: #999;
-}
-
 .meal-empty {
   margin-top: 16rpx;
   padding-top: 16rpx;
@@ -95,38 +79,39 @@
 /* 左滑删除 */
 .food-item-wrap {
   overflow: hidden;
-  position: relative;
 }
 
-.slide-area {
-  width: calc(100% + 160rpx);
-  height: 72rpx;
-  position: relative;
-}
-
-.slide-view {
-  width: calc(100% - 160rpx);
-  height: 72rpx;
-  background: #fff;
+.slide-inner {
   display: flex;
-  align-items: center;
-  z-index: 1;
+  flex-direction: row;
+  width: calc(100% + 160rpx);
+  will-change: transform;
 }
 
 .food-item-inner {
-  width: 100%;
+  flex-shrink: 0;
+  width: calc(100% - 160rpx);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8rpx 0;
+  padding: 10rpx 0;
+  min-height: 72rpx;
+}
+
+.food-name {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.food-cal {
+  font-size: 24rpx;
+  color: #999;
 }
 
 .delete-btn {
-  position: absolute;
-  right: 0;
-  top: 0;
+  flex-shrink: 0;
   width: 160rpx;
-  height: 72rpx;
+  min-height: 72rpx;
   background: #FF4444;
   display: flex;
   align-items: center;

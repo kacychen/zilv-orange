@@ -24,35 +24,49 @@ Component({
       this.triggerEvent('add', { mealType: this.data.mealType });
     },
 
-    onTouchStart() {
-      // 记录触摸开始，用于区分滑动和点击
+    onTouchStart(e) {
+      this._touchStartX = e.touches[0].clientX;
+      this._touchStartY = e.touches[0].clientY;
+      this._touchIndex = e.currentTarget.dataset.index;
+      this._isSwiping = false;
     },
 
-    onSlideChange(e) {
-      const index = e.currentTarget.dataset.index;
-      const x = e.detail.x;
-      const foods = this.data.foods;
+    onTouchMove(e) {
+      const dx = e.touches[0].clientX - this._touchStartX;
+      const dy = e.touches[0].clientY - this._touchStartY;
 
-      // 先复位其他滑开的条目
-      if (this.data.slideIndex >= 0 && this.data.slideIndex !== index) {
-        this._resetSlide();
+      // 竖向滚动优先，不拦截
+      if (!this._isSwiping && Math.abs(dy) > Math.abs(dx)) {
+        return;
       }
+      this._isSwiping = true;
 
-      if (x <= -80) {
-        // 吸附到 -160（完全露出删除按钮）
-        const newFoods = foods.map((f, i) => ({
-          ...f,
-          _slideX: i === index ? -160 : 0
-        }));
-        this.setData({ foods: newFoods, slideIndex: index });
-      } else if (x >= -20) {
-        // 复位
-        const newFoods = foods.map((f, i) => ({
-          ...f,
-          _slideX: i === index ? 0 : f._slideX || 0
-        }));
-        this.setData({ foods: newFoods, slideIndex: -1 });
-      }
+      const index = this._touchIndex;
+      const currentX = this.data.foods[index]._slideX || 0;
+      let newX = currentX + dx * 2; // px 转 rpx 近似
+      newX = Math.max(-160, Math.min(0, newX));
+
+      // 关闭其他已打开的条目
+      const foods = this.data.foods.map((f, i) => ({
+        ...f,
+        _slideX: i === index ? newX : 0
+      }));
+      this.setData({ foods, slideIndex: newX < -10 ? index : -1 });
+      this._touchStartX = e.touches[0].clientX;
+    },
+
+    onTouchEnd() {
+      if (!this._isSwiping) return;
+      const index = this._touchIndex;
+      const currentX = this.data.foods[index]._slideX || 0;
+
+      // 超过一半吸附展开，否则复位
+      const snapX = currentX < -80 ? -160 : 0;
+      const foods = this.data.foods.map((f, i) => ({
+        ...f,
+        _slideX: i === index ? snapX : (f._slideX || 0)
+      }));
+      this.setData({ foods, slideIndex: snapX < 0 ? index : -1 });
     },
 
     _resetSlide() {
