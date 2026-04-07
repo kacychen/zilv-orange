@@ -24,12 +24,10 @@
   height: 16rpx;
   background: #F0F0F0;
   border-radius: 8rpx;
-  overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
   border-radius: 8rpx;
-  transition: width 0.3s ease;
   max-width: 100%;
 }
