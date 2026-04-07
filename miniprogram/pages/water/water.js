@@ -17,10 +17,16 @@ const QUICK_LIST = [
   { type: 'tea',    type_name: '茶',   icon: '🍵', amount: 300 }
 ];
 
+// #6 — 默认饮水目标常量，避免魔法数字
+const DEFAULT_WATER_GOAL = 2000;
+
+// #7 — 一天毫秒数常量，避免魔法数字
+const ONE_DAY_MS = 86400000;
+
 Page({
   data: {
     totalAmount: 0,
-    waterGoal: 2000,
+    waterGoal: DEFAULT_WATER_GOAL,
     percent: 0,
     cupCount: 0,
     streakDays: 0,
@@ -46,7 +52,8 @@ Page({
 
     try {
       // 1. 加载用户配置（获取目标 + 判断是否首次使用）
-      const myConfig = await db.collection('user_config').orderBy('_id', 'asc').limit(1).get();
+      // #8 — 与 _saveGoal 统一，不带 orderBy，直接 limit(1)
+      const myConfig = await db.collection('user_config').limit(1).get();
       const config = myConfig.data[0];
 
       if (!config) {
@@ -55,7 +62,8 @@ Page({
         return;
       }
 
-      const waterGoal = config.water_goal || 2000;
+      // #6 — 使用常量替代魔法数字 2000
+      const waterGoal = config.water_goal || DEFAULT_WATER_GOAL;
       this.setData({ waterGoal });
 
       // 2. 加载今日记录
@@ -81,13 +89,15 @@ Page({
         dayMap[r.date] += r.amount;
       });
 
-      const yesterday = formatDate(new Date(Date.now() - 86400000));
+      // #7 — 缓存 Date.now()，避免循环中重复调用
+      const now = Date.now();
+      const yesterday = formatDate(new Date(now - ONE_DAY_MS));
       const yesterdayAmount = dayMap[yesterday] || 0;
 
       // 连续达标天（从今天往前数）
       let streakDays = 0;
       for (let i = 0; i < 30; i++) {
-        const d = formatDate(new Date(Date.now() - i * 86400000));
+        const d = formatDate(new Date(now - i * ONE_DAY_MS));
         if ((dayMap[d] || 0) >= waterGoal) {
           streakDays++;
         } else {
@@ -153,7 +163,11 @@ Page({
     this.setData({ customAmount: '' });
   },
 
+  // #3 — 添加 _adding 重入保护，防止双击重复记录
   async _addRecord(amount, type, type_name) {
+    if (this._adding) return;
+    this._adding = true;
+
     const db = wx.cloud.database();
     const today = getToday();
     const now = new Date();
@@ -188,11 +202,19 @@ Page({
       const percent = Math.min(Math.round(totalAmount / this.data.waterGoal * 100), 100);
       const cupCount = this.data.cupCount + 1;
 
-      this.setData({ records, totalAmount, percent, cupCount });
+      // #5 — 乐观更新 streakDays：若本次新增使今日首次达标，则 streakDays 至少为 1
+      const streakDays = (totalAmount >= this.data.waterGoal && this.data.streakDays === 0)
+        ? 1
+        : this.data.streakDays;
+
+      this.setData({ records, totalAmount, percent, cupCount, streakDays });
     } catch (err) {
       wx.hideLoading();
       console.error('_addRecord error', err);
       wx.showToast({ title: '记录失败，请重试', icon: 'error' });
+    } finally {
+      // #3 — 无论成功或失败，释放重入锁
+      this._adding = false;
     }
   },
 
@@ -201,7 +223,8 @@ Page({
   onTouchStart(e) {
     this._touchStartX = e.touches[0].clientX;
     this._touchStartY = e.touches[0].clientY;
-    this._touchIndex = e.currentTarget.dataset.index;
+    // #4 — parseInt 保证 _touchIndex 为数字类型，避免严格比较失败
+    this._touchIndex = parseInt(e.currentTarget.dataset.index, 10);
     this._isSwiping = false;
   },
 
@@ -212,21 +235,23 @@ Page({
     if (!this._isSwiping && Math.abs(dy) > Math.abs(dx)) return;
     this._isSwiping = true;
 
+    // #4 — _touchIndex 已在 onTouchStart 中 parseInt，此处直接使用
     const index = this._touchIndex;
     const currentX = this.data.records[index]._slideX || 0;
     let newX = currentX + dx * 2;
     newX = Math.max(-160, Math.min(0, newX));
 
-    const records = this.data.records.map((r, i) => ({
-      ...r,
-      _slideX: i === index ? newX : 0
-    }));
-    this.setData({ records, slideIndex: newX < -10 ? index : -1 });
+    // #2 — 使用键路径 setData，避免全量数组更新导致帧率下降
+    this.setData({
+      [`records[${index}]._slideX`]: newX,
+      slideIndex: newX < -10 ? index : -1
+    });
     this._touchStartX = e.touches[0].clientX;
   },
 
   onTouchEnd() {
     if (!this._isSwiping) return;
+    // #4 — _touchIndex 已在 onTouchStart 中 parseInt，此处直接使用
     const index = this._touchIndex;
     const currentX = this.data.records[index]._slideX || 0;
     const snapX = currentX < -80 ? -160 : 0;
@@ -242,46 +267,52 @@ Page({
     this.setData({ records, slideIndex: -1 });
   },
 
+  // #1 — 将 wx.showModal 包装为 Promise，避免 async 回调反模式
   async onDeleteRecord(e) {
-    const index = e.currentTarget.dataset.index;
+    // #4 — parseInt 保证 index 为数字类型
+    const index = parseInt(e.currentTarget.dataset.index, 10);
     const record = this.data.records[index];
     if (!record || !record._id) return;
 
-    wx.showModal({
-      title: '确认删除',
-      content: `删除「${record.type_name} ${record.amount}ml」？`,
-      confirmColor: '#FF4444',
-      success: async (res) => {
-        if (!res.confirm) {
-          this._resetSlide();
-          return;
-        }
-        wx.showLoading({ title: '删除中...' });
-        try {
-          const db = wx.cloud.database();
-          await db.collection('water_records').doc(record._id).remove();
-          wx.hideLoading();
+    const modalRes = await new Promise(resolve =>
+      wx.showModal({
+        title: '确认删除',
+        content: `删除「${record.type_name} ${record.amount}ml」？`,
+        confirmColor: '#FF4444',
+        success: resolve
+      })
+    );
 
-          const records = this.data.records
-            .filter((_, i) => i !== index)
-            .map(r => ({ ...r, _slideX: 0 }));
-          const totalAmount = this.data.totalAmount - record.amount;
-          const percent = Math.min(Math.round(Math.max(totalAmount, 0) / this.data.waterGoal * 100), 100);
-          const cupCount = Math.max(this.data.cupCount - 1, 0);
-          this.setData({ records, totalAmount, percent, cupCount, slideIndex: -1 });
-        } catch (err) {
-          wx.hideLoading();
-          this._resetSlide();
-          wx.showToast({ title: '删除失败，请重试', icon: 'error' });
-        }
-      }
-    });
+    if (!modalRes.confirm) {
+      this._resetSlide();
+      return;
+    }
+
+    wx.showLoading({ title: '删除中...' });
+    try {
+      const db = wx.cloud.database();
+      await db.collection('water_records').doc(record._id).remove();
+      wx.hideLoading();
+
+      const records = this.data.records
+        .filter((_, i) => i !== index)
+        .map(r => ({ ...r, _slideX: 0 }));
+      const totalAmount = this.data.totalAmount - record.amount;
+      const percent = Math.min(Math.round(Math.max(totalAmount, 0) / this.data.waterGoal * 100), 100);
+      const cupCount = Math.max(this.data.cupCount - 1, 0);
+      this.setData({ records, totalAmount, percent, cupCount, slideIndex: -1 });
+    } catch (err) {
+      wx.hideLoading();
+      this._resetSlide();
+      wx.showToast({ title: '删除失败，请重试', icon: 'error' });
+    }
   },
 
   // ── 首次使用目标设置 ──────────────────────────────
 
   async onGoalConfirm() {
-    const goal = parseInt(this.data.goalInput) || 2000;
+    // #6 — 使用常量替代魔法数字 2000
+    const goal = parseInt(this.data.goalInput) || DEFAULT_WATER_GOAL;
     if (goal < 500 || goal > 8000) {
       wx.showToast({ title: '目标应在 500-8000ml 之间', icon: 'none' });
       return;
@@ -290,7 +321,8 @@ Page({
   },
 
   async onGoalCancel() {
-    await this._saveGoal(2000);
+    // #6 — 使用常量替代魔法数字 2000
+    await this._saveGoal(DEFAULT_WATER_GOAL);
   },
 
   async _saveGoal(goal) {
@@ -298,6 +330,7 @@ Page({
     wx.showLoading({ title: '保存中...' });
     try {
       // 查询是否已存在配置（upsert 逻辑）
+      // #8 — 与 loadData 统一，都使用 .limit(1) 不带 orderBy
       const existing = await db.collection('user_config').limit(1).get();
       if (existing.data.length > 0) {
         await db.collection('user_config').doc(existing.data[0]._id).update({
