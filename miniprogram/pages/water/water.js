@@ -25,6 +25,26 @@ Page({
   },
 
   onShow() {
-    // TODO: 后续在此调用 loadData() 刷新当日饮水数据
-  }
+    // TODO: 调用 loadData() 刷新当日饮水数据（Task 4 实现）
+  },
+
+  // ── 输入处理（Task 4 实现）────────────────────────
+  onCustomInput() {},
+  onWeightInput() {},
+  onGoalInput() {},
+  onMaskTap() {},
+
+  // ── 快捷记录（Task 4 实现）────────────────────────
+  onQuickAdd() {},
+  onCustomAdd() {},
+
+  // ── 左滑删除（Task 4 实现）────────────────────────
+  onTouchStart() {},
+  onTouchMove() {},
+  onTouchEnd() {},
+  onDeleteRecord() {},
+
+  // ── 目标设置（Task 4 实现）────────────────────────
+  onGoalConfirm() {},
+  onGoalCancel() {}
 });

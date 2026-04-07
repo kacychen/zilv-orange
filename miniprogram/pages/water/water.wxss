@@ -99,6 +99,7 @@ page {
   font-size: 28rpx;
   color: #333;
   box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  box-sizing: border-box;
 }
 
 .custom-add-btn {
