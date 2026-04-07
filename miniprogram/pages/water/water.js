@@ -40,6 +40,11 @@ Page({
     slideIndex: -1
   },
 
+  onLoad() {
+    const { windowWidth } = wx.getSystemInfoSync();
+    this._rpxRatio = 750 / windowWidth;
+  },
+
   onShow() {
     this.loadData();
   },
@@ -66,22 +71,22 @@ Page({
       const waterGoal = config.water_goal || DEFAULT_WATER_GOAL;
       this.setData({ waterGoal });
 
-      // 2. 加载今日记录
-      const todayRes = await db.collection('water_records')
-        .where({ date: today })
-        .orderBy('recorded_at', 'desc')
-        .get();
+      // 2 & 3. 并行加载今日记录 + 近 30 天数据
+      const recentDays = getRecentDays(30);
+      const [todayRes, recentRes] = await Promise.all([
+        db.collection('water_records')
+          .where({ date: today })
+          .orderBy('recorded_at', 'desc')
+          .get(),
+        db.collection('water_records')
+          .where({ date: db.command.in(recentDays) })
+          .get()
+      ]);
 
       const records = todayRes.data.map(r => this._formatRecord(r));
       const totalAmount = records.reduce((sum, r) => sum + r.amount, 0);
       const percent = Math.min(Math.round(totalAmount / waterGoal * 100), 100);
       const cupCount = records.length;
-
-      // 3. 加载近 30 天数据（计算昨日量 + 连续达标天）
-      const recentDays = getRecentDays(30);
-      const recentRes = await db.collection('water_records')
-        .where({ date: db.command.in(recentDays) })
-        .get();
 
       const dayMap = {};
       recentRes.data.forEach(r => {
@@ -202,12 +207,7 @@ Page({
       const percent = Math.min(Math.round(totalAmount / this.data.waterGoal * 100), 100);
       const cupCount = this.data.cupCount + 1;
 
-      // #5 — 乐观更新 streakDays：若本次新增使今日首次达标，则 streakDays 至少为 1
-      const streakDays = (totalAmount >= this.data.waterGoal && this.data.streakDays === 0)
-        ? 1
-        : this.data.streakDays;
-
-      this.setData({ records, totalAmount, percent, cupCount, streakDays });
+      this.setData({ records, totalAmount, percent, cupCount });
     } catch (err) {
       wx.hideLoading();
       console.error('_addRecord error', err);
@@ -238,7 +238,7 @@ Page({
     // #4 — _touchIndex 已在 onTouchStart 中 parseInt，此处直接使用
     const index = this._touchIndex;
     const currentX = this.data.records[index]._slideX || 0;
-    let newX = currentX + dx * 2;
+    let newX = currentX + dx * this._rpxRatio;
     newX = Math.max(-160, Math.min(0, newX));
 
     // #2 — 使用键路径 setData，避免全量数组更新导致帧率下降
@@ -297,7 +297,7 @@ Page({
       const records = this.data.records
         .filter((_, i) => i !== index)
         .map(r => ({ ...r, _slideX: 0 }));
-      const totalAmount = this.data.totalAmount - record.amount;
+      const totalAmount = Math.max(this.data.totalAmount - record.amount, 0);
       const percent = Math.min(Math.round(Math.max(totalAmount, 0) / this.data.waterGoal * 100), 100);
       const cupCount = Math.max(this.data.cupCount - 1, 0);
       this.setData({ records, totalAmount, percent, cupCount, slideIndex: -1 });
