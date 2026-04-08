@@ -44,20 +44,31 @@ Page({
 
     const db = wx.cloud.database();
     const _ = db.command;
-    db.collection('daily_summary')
+    db.collection('meal_records')
       .where({ date: _.in(days) })
       .get()
       .then(res => {
+        // 按日期汇总卡路里
+        const calMap = {};
+        res.data.forEach(r => {
+          if (!calMap[r.date]) calMap[r.date] = 0;
+          calMap[r.date] += (r.calories || 0);
+        });
+
+        // 构造与原来格式兼容的 summaryMap（供 drawBarChart 使用）
         const summaryMap = {};
-        res.data.forEach(s => { summaryMap[s.date] = s; });
+        days.forEach(d => {
+          if (calMap[d]) {
+            summaryMap[d] = {
+              total_calories: calMap[d],
+              goal_reached: calMap[d] >= target
+            };
+          }
+        });
 
         const weekDays = days.map(d => getShortDate(d));
-        const weekCalories = days.map(d =>
-          summaryMap[d] ? (summaryMap[d].total_calories || 0) : 0
-        );
-        const goalDays = days.filter(
-          d => summaryMap[d] && summaryMap[d].goal_reached
-        ).length;
+        const weekCalories = days.map(d => calMap[d] || 0);
+        const goalDays = days.filter(d => (calMap[d] || 0) >= target).length;
         const totalDays = weekCalories.filter(c => c > 0).length;
         const totalCal = weekCalories.reduce((a, b) => a + b, 0);
         const avgCalories = totalDays > 0 ? Math.round(totalCal / totalDays) : 0;
@@ -165,7 +176,7 @@ Page({
           ctx.lineTo(padLeft + chartW, y);
           ctx.stroke();
           ctx.fillStyle = '#BDBDBD';
-          ctx.font = '20px sans-serif';
+          ctx.font = '13px sans-serif';
           ctx.textAlign = 'right';
           ctx.fillText(Math.round(maxVal * i / 4), padLeft - 6, y + 5);
         }
@@ -223,7 +234,7 @@ Page({
         // X轴标签
         const weekDays = this.data.weekDays;
         ctx.fillStyle = '#BDBDBD';
-        ctx.font = '20px sans-serif';
+        ctx.font = '13px sans-serif';
         ctx.textAlign = 'center';
         points.forEach((p, i) => {
           ctx.fillText(weekDays[i] || '', p.x, H - 8);
@@ -265,7 +276,7 @@ Page({
           ctx.lineTo(padLeft + chartW, y);
           ctx.stroke();
           ctx.fillStyle = '#BDBDBD';
-          ctx.font = '18px sans-serif';
+          ctx.font = '13px sans-serif';
           ctx.textAlign = 'right';
           ctx.fillText(Math.round(maxVal * i / 4), padLeft - 6, y + 5);
         }
@@ -302,7 +313,7 @@ Page({
         // X轴标签：每5天显示一次，最后一天也显示
         const weekDays = this.data.weekDays;
         ctx.fillStyle = '#BDBDBD';
-        ctx.font = '18px sans-serif';
+        ctx.font = '13px sans-serif';
         ctx.textAlign = 'center';
         calories.forEach((_, i) => {
           if (i % 5 === 0 || i === n - 1) {

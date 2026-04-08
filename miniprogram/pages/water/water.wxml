@@ -22,38 +22,8 @@
     </view>
   </view>
 
-  <!-- 快捷记录 -->
-  <view class="section-title">快捷记录</view>
-  <view class="quick-row">
-    <view
-      class="quick-btn"
-      wx:for="{{quickList}}"
-      wx:key="type_name"
-      data-item="{{item}}"
-      bindtap="onQuickAdd"
-    >
-      <text class="quick-icon">{{item.icon}}</text>
-      <text class="quick-ml">{{item.amount}}ml</text>
-      <text class="quick-name">{{item.type_name}}</text>
-    </view>
-  </view>
-
-  <!-- 自定义输入 -->
-  <view class="custom-row">
-    <input
-      class="custom-input"
-      type="number"
-      placeholder="自定义 ml"
-      value="{{customAmount}}"
-      bindinput="onCustomInput"
-    />
-    <view class="custom-add-btn" bindtap="onCustomAdd">
-      <text class="custom-add-text">+ 记录</text>
-    </view>
-  </view>
-
-  <!-- 今日时间线 -->
-  <view class="section-title">今日记录</view>
+  <!-- 今日记录 -->
+  <view class="section-title" wx:if="{{records.length > 0}}">今日记录</view>
   <view class="timeline" wx:if="{{records.length > 0}}">
     <view
       class="tl-item-wrap"
@@ -67,7 +37,8 @@
       <view class="tl-slide-inner" style="transform: translateX({{item._slideX || 0}}rpx);">
         <view class="tl-item">
           <view class="tl-dot">
-            <text class="tl-dot-icon">{{item.icon}}</text>
+            <image wx:if="{{item.type === 'water'}}" class="tl-dot-img" src="/images/icon-water.svg" mode="aspectFit"/>
+            <text wx:else class="tl-dot-icon">{{item.icon}}</text>
           </view>
           <view class="tl-info">
             <text class="tl-name">{{item.type_name}}</text>
@@ -83,6 +54,83 @@
   </view>
   <view class="timeline-empty" wx:else>
     <text class="empty-text">今天还没有记录，喝点水吧 💧</text>
+  </view>
+
+  <!-- 底部占位，防止被按钮遮住 -->
+  <view class="bottom-placeholder"></view>
+</view>
+
+<!-- 固定底部喝水按钮 -->
+<view class="add-btn-wrap">
+  <view class="add-btn" bindtap="onAddWaterTap">
+    <text class="add-btn-text">＋ 喝水</text>
+  </view>
+</view>
+
+<!-- 第一步：选择饮品类型 -->
+<view class="sheet-mask" wx:if="{{showDrinkPicker}}" bindtap="onDrinkPickerClose"></view>
+<view class="bottom-sheet {{showDrinkPicker ? 'bottom-sheet-show' : ''}}">
+  <view class="sheet-header">
+    <text class="sheet-title">选择饮品</text>
+    <view class="sheet-close" bindtap="onDrinkPickerClose">✕</view>
+  </view>
+  <view class="drink-grid">
+    <view
+      class="drink-item"
+      wx:for="{{drinkTypes}}"
+      wx:key="type"
+      data-drink="{{item}}"
+      bindtap="onDrinkTap"
+    >
+      <view class="drink-icon-wrap">
+        <image wx:if="{{item.type === 'water'}}" class="drink-img" src="/images/icon-water.svg" mode="aspectFit"/>
+        <text wx:else class="drink-icon">{{item.icon}}</text>
+      </view>
+      <text class="drink-name">{{item.type_name}}</text>
+    </view>
+  </view>
+</view>
+
+<!-- 第二步：选择容量 -->
+<view class="sheet-mask" wx:if="{{showAmountPicker}}" bindtap="onPickerMaskTap"></view>
+<view class="bottom-sheet {{showAmountPicker ? 'bottom-sheet-show' : ''}}">
+  <view class="sheet-header">
+    <view class="sheet-back" bindtap="onPickerBack">←</view>
+    <text class="sheet-title">选择容量</text>
+    <view class="sheet-close" bindtap="onPickerClose">✕</view>
+  </view>
+  <view class="picker-drink-label">
+    <image wx:if="{{selectedDrink.type === 'water'}}" class="drink-img" src="/images/icon-water.svg" mode="aspectFit" style="width:40rpx;height:40rpx;"/>
+    <text wx:else class="picker-drink-icon">{{selectedDrink.icon}}</text>
+    <text class="picker-drink-name">{{selectedDrink.type_name}}</text>
+  </view>
+  <view class="amount-grid">
+    <view
+      class="amount-item {{item === selectedAmount && !useCustom ? 'amount-item-active' : ''}}"
+      wx:for="{{amountPresets}}"
+      wx:key="*this"
+      data-amount="{{item}}"
+      bindtap="onAmountTap"
+    >
+      <text>{{item}}ml</text>
+    </view>
+  </view>
+  <view class="custom-amount-row" bindtap="onCustomToggle">
+    <view class="custom-radio {{useCustom ? 'custom-radio-active' : ''}}"></view>
+    <text class="custom-label">自定义</text>
+    <input
+      class="custom-amount-input"
+      type="number"
+      placeholder="请输入..."
+      placeholder-style="color:#ccc;"
+      value="{{customAmount}}"
+      bindinput="onCustomInput"
+      disabled="{{!useCustom}}"
+    />
+    <text class="custom-unit">ml</text>
+  </view>
+  <view class="picker-confirm-btn" bindtap="onAmountConfirm">
+    <text class="picker-confirm-text">保存</text>
   </view>
 </view>
 

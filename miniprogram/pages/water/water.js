@@ -2,20 +2,30 @@ const { getToday, formatDate, getRecentDays } = require('../../utils/date');
 
 // 饮品图标映射
 const TYPE_ICON = {
-  water:  '💧',
-  coffee: '☕',
-  tea:    '🍵',
-  juice:  '🧃',
-  other:  '🥤'
+  water:   '🫗',
+  coffee:  '☕',
+  tea:     '🍵',
+  juice:   '🧃',
+  milk:    '🥛',
+  sports:  '⚡',
+  bubbletea: '🧋',
+  other:   '🥤'
 };
 
-// 快捷记录预设
-const QUICK_LIST = [
-  { type: 'water',  type_name: '白水', icon: '💧', amount: 250 },
-  { type: 'water',  type_name: '大杯', icon: '🍶', amount: 350 },
-  { type: 'coffee', type_name: '咖啡', icon: '☕', amount: 200 },
-  { type: 'tea',    type_name: '茶',   icon: '🍵', amount: 300 }
+// 饮品类型列表
+const DRINK_TYPES = [
+  { type: 'water',     type_name: '水',     icon: '🫗' },
+  { type: 'coffee',    type_name: '咖啡',   icon: '☕' },
+  { type: 'milk',      type_name: '牛奶',   icon: '🥛' },
+  { type: 'juice',     type_name: '果汁',   icon: '🧃' },
+  { type: 'tea',       type_name: '茶',     icon: '🍵' },
+  { type: 'sports',    type_name: '运动饮料', icon: '⚡' },
+  { type: 'bubbletea', type_name: '奶茶',   icon: '🧋' },
+  { type: 'other',     type_name: '其他',   icon: '🥤' },
 ];
+
+// 容量预设（毫升）
+const AMOUNT_PRESETS = [100, 150, 200, 250, 300, 400, 500, 600];
 
 // #6 — 默认饮水目标常量，避免魔法数字
 const DEFAULT_WATER_GOAL = 2000;
@@ -31,13 +41,19 @@ Page({
     cupCount: 0,
     streakDays: 0,
     yesterdayAmount: 0,
-    customAmount: '',
     showGoalModal: false,
     weightInput: '',
     goalInput: '',
-    quickList: QUICK_LIST,
+    drinkTypes: DRINK_TYPES,
+    amountPresets: AMOUNT_PRESETS,
     records: [],
-    slideIndex: -1
+    slideIndex: -1,
+    // 容量选择弹层
+    showAmountPicker: false,
+    selectedDrink: null,
+    selectedAmount: 0,
+    customAmount: '',
+    useCustom: false
   },
 
   onLoad() {
@@ -137,8 +153,65 @@ Page({
 
   // ── 输入处理 ──────────────────────────────────────
 
+  onAddWaterTap() {
+    this.setData({ showDrinkPicker: true });
+  },
+
+  onDrinkPickerClose() {
+    this.setData({ showDrinkPicker: false });
+  },
+
+  // 点击饮品类型 → 关闭饮品弹层，打开容量弹层
+  onDrinkTap(e) {
+    const drink = e.currentTarget.dataset.drink;
+    this.setData({
+      showDrinkPicker: false,
+      selectedDrink: drink,
+      selectedAmount: 0,
+      customAmount: '',
+      useCustom: false,
+      showAmountPicker: true
+    });
+  },
+
+  onPickerBack() {
+    this.setData({ showAmountPicker: false, showDrinkPicker: true });
+  },
+
+  // 选择预设容量
+  onAmountTap(e) {
+    const amount = e.currentTarget.dataset.amount;
+    this.setData({ selectedAmount: amount, useCustom: false, customAmount: '' });
+  },
+
+  // 切换自定义输入
+  onCustomToggle() {
+    this.setData({ useCustom: true, selectedAmount: 0 });
+  },
+
   onCustomInput(e) {
     this.setData({ customAmount: e.detail.value });
+  },
+
+  // 关闭弹层
+  onPickerClose() {
+    this.setData({ showAmountPicker: false });
+  },
+
+  onPickerMaskTap() {
+    this.setData({ showAmountPicker: false });
+  },
+
+  // 确认保存
+  async onAmountConfirm() {
+    const { selectedDrink, selectedAmount, customAmount, useCustom } = this.data;
+    const amount = useCustom ? parseInt(customAmount) : selectedAmount;
+    if (!amount || amount <= 0 || amount > 5000) {
+      wx.showToast({ title: '请选择或输入有效水量', icon: 'none' });
+      return;
+    }
+    this.setData({ showAmountPicker: false });
+    await this._addRecord(amount, selectedDrink.type, selectedDrink.type_name);
   },
 
   onWeightInput(e) {
@@ -152,24 +225,7 @@ Page({
   },
 
   onMaskTap() {
-    // 弹窗背景点击不关闭（强制设置目标）
-  },
-
-  // ── 记录饮水 ──────────────────────────────────────
-
-  async onQuickAdd(e) {
-    const item = e.currentTarget.dataset.item;
-    await this._addRecord(item.amount, item.type, item.type_name);
-  },
-
-  async onCustomAdd() {
-    const amount = parseInt(this.data.customAmount);
-    if (!amount || amount <= 0 || amount > 5000) {
-      wx.showToast({ title: '请输入有效水量（1-5000ml）', icon: 'none' });
-      return;
-    }
-    await this._addRecord(amount, 'water', '白水');
-    this.setData({ customAmount: '' });
+    // 目标弹窗背景点击不关闭
   },
 
   // #3 — 添加 _adding 重入保护，防止双击重复记录
