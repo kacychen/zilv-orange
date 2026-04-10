@@ -1,6 +1,14 @@
 const { getToday } = require('../../utils/date');
 const { sumNutrition, recommendedNutrients } = require('../../utils/nutrition');
 
+function timestampToDateStr(ts) {
+  const d = new Date(ts * 1000);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 Page({
   data: {
     greeting: '',
@@ -34,8 +42,9 @@ Page({
     this.setGreeting();
     this.setDateStr();
     this.loadUserInfo();
-    this.loadTodayRecords();
-    this.loadExerciseData();
+    Promise.all([this.loadTodayRecords(), this.loadExerciseData()]).then(() => {
+      this.recalcRemaining();
+    });
     this.loadTodaySteps();
   },
 
@@ -76,7 +85,7 @@ Page({
     const db = wx.cloud.database();
     const today = getToday();
 
-    db.collection('meal_records').where({ date: today }).get().then(res => {
+    return db.collection('meal_records').where({ date: today }).get().then(res => {
       const records = res.data;
       const app = getApp();
       app.globalData.todayRecords = records;
@@ -101,8 +110,7 @@ Page({
         totalCalories: summary.total_calories,
         totalProtein: summary.total_protein,
         totalCarbs: summary.total_carbs,
-        totalFat: summary.total_fat,
-        remaining: this.data.calorieTarget - summary.total_calories + this.data.totalBurned
+        totalFat: summary.total_fat
       });
     }).catch(err => {
       console.error('加载记录失败', err);
@@ -114,14 +122,20 @@ Page({
     const db = wx.cloud.database();
     const today = getToday();
 
-    db.collection('exercise_records').where({ date: today }).get().then(res => {
+    return db.collection('exercise_records').where({ date: today }).get().then(res => {
       const totalBurned = res.data.reduce((sum, r) => sum + (r.calories || 0), 0);
       this.setData({
-        totalBurned,
-        remaining: this.data.calorieTarget - this.data.totalCalories + totalBurned
+        totalBurned
       });
     }).catch(err => {
       console.error('加载运动记录失败', err);
+      wx.showToast({ title: '运动记录加载失败', icon: 'none' });
+    });
+  },
+
+  recalcRemaining() {
+    this.setData({
+      remaining: this.data.calorieTarget - this.data.totalCalories + this.data.totalBurned
     });
   },
 
@@ -130,18 +144,11 @@ Page({
       success: (res) => {
         const stepInfoList = res.stepInfoList || [];
         const today = getToday();
-        const todayEntry = stepInfoList.find(s => {
-          const d = new Date(s.timestamp * 1000);
-          const y = d.getFullYear();
-          const m = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          return `${y}-${m}-${day}` === today;
-        });
+        const todayEntry = stepInfoList.find(s => timestampToDateStr(s.timestamp) === today);
         this.setData({ todaySteps: todayEntry ? todayEntry.step : 0 });
       },
       fail: () => {
         // 用户未授权或不支持，步数显示 0，不影响功能
-        this.setData({ todaySteps: 0 });
       }
     });
   },
