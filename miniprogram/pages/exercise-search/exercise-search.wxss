@@ -1,0 +1,202 @@
+/* ── 页面容器 ── */
+.container {
+  padding: 24rpx;
+  background: #FFF3E0;
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+/* ── 搜索框 ── */
+.search-bar {
+  margin-bottom: 24rpx;
+}
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 40rpx;
+  padding: 16rpx 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
+}
+.search-icon { margin-right: 12rpx; font-size: 30rpx; }
+.search-input { flex: 1; font-size: 28rpx; }
+
+/* ── 分类标题 ── */
+.category-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #999;
+  margin: 24rpx 0 12rpx 4rpx;
+  text-transform: uppercase;
+}
+
+/* ── 运动列表 ── */
+.exercise-list {
+  background: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.exercise-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 24rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+.exercise-item:last-child { border-bottom: none; }
+
+.ex-info { flex: 1; }
+.ex-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+}
+.ex-meta {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* ── ＋ 按钮 ── */
+.add-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #FF7A00;
+  color: #fff;
+  font-size: 36rpx;
+  line-height: 54rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(255,122,0,0.3);
+  flex-shrink: 0;
+}
+
+/* ── 空态 ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+}
+.empty-icon { font-size: 80rpx; margin-bottom: 20rpx; }
+.empty-text { font-size: 30rpx; color: #666; }
+
+/* ── 底部弹层遮罩 ── */
+.sheet-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+}
+
+/* ── 底部弹层 ── */
+.bottom-sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx 30rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  z-index: 101;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+.bottom-sheet-show { transform: translateY(0); }
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+.sheet-title {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #333;
+}
+.sheet-close {
+  font-size: 28rpx;
+  color: #999;
+  padding: 8rpx;
+}
+
+/* ── 时长快捷格子 ── */
+.duration-grid {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+.duration-item {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 16rpx;
+  background: #F5F5F5;
+  font-size: 26rpx;
+  color: #555;
+}
+.duration-item.duration-active {
+  background: #FF7A00;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── 自定义时长 ── */
+.custom-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+.custom-radio {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 2rpx solid #ddd;
+  flex-shrink: 0;
+}
+.custom-radio-active {
+  background: #FF7A00;
+  border-color: #FF7A00;
+}
+.custom-label { font-size: 28rpx; color: #555; }
+.custom-input {
+  flex: 1;
+  background: #F5F5F5;
+  border-radius: 12rpx;
+  padding: 12rpx 16rpx;
+  font-size: 28rpx;
+}
+.custom-unit { font-size: 26rpx; color: #999; }
+
+/* ── 预估消耗 ── */
+.cal-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFF3E0;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 30rpx;
+}
+.cal-preview-label { font-size: 26rpx; color: #666; }
+.cal-preview-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #FF7A00;
+}
+
+/* ── 保存按钮 ── */
+.confirm-btn {
+  background: linear-gradient(135deg, #FF7A00, #FF9A40);
+  border-radius: 48rpx;
+  padding: 28rpx 0;
+  text-align: center;
+}
+.confirm-text {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+}

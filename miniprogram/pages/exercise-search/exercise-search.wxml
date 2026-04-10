@@ -1,0 +1,89 @@
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索运动名称"
+        bindinput="onSearchInput"
+        value="{{keyword}}"
+        focus="true"
+      />
+    </view>
+  </view>
+
+  <!-- 分类运动列表 -->
+  <block wx:for="{{groups}}" wx:key="type">
+    <view class="category-title">{{item.type_name}}</view>
+    <view class="exercise-list">
+      <view
+        class="exercise-item"
+        wx:for="{{item.exercises}}"
+        wx:for-item="ex"
+        wx:key="name"
+      >
+        <view class="ex-info">
+          <text class="ex-name">{{ex.name}}</text>
+          <text class="ex-meta">{{ex.previewCal}} 大卡 / 30分钟</text>
+        </view>
+        <view class="add-btn" bindtap="onAddTap" data-exercise="{{ex}}">＋</view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 无搜索结果 -->
+  <view class="empty-state" wx:if="{{keyword && groups.length === 0}}">
+    <text class="empty-icon">🏃</text>
+    <text class="empty-text">未找到相关运动</text>
+  </view>
+</view>
+
+<!-- 遮罩 -->
+<view class="sheet-mask" wx:if="{{showSheet}}" bindtap="onSheetClose"></view>
+
+<!-- 时长选择底部弹层 -->
+<view class="bottom-sheet {{showSheet ? 'bottom-sheet-show' : ''}}">
+  <view class="sheet-header">
+    <text class="sheet-title">{{selectedExercise.name}}</text>
+    <view class="sheet-close" bindtap="onSheetClose">✕</view>
+  </view>
+
+  <!-- 时长快捷选项 -->
+  <view class="duration-grid">
+    <view
+      class="duration-item {{duration === item && !useCustom ? 'duration-active' : ''}}"
+      wx:for="{{durationPresets}}"
+      wx:key="*this"
+      data-val="{{item}}"
+      bindtap="onDurationTap"
+    >{{item}} 分钟</view>
+  </view>
+
+  <!-- 自定义时长 -->
+  <view class="custom-row" bindtap="onCustomToggle">
+    <view class="custom-radio {{useCustom ? 'custom-radio-active' : ''}}"></view>
+    <text class="custom-label">自定义</text>
+    <input
+      class="custom-input"
+      type="number"
+      placeholder="输入分钟数"
+      placeholder-style="color:#ccc;"
+      value="{{customDuration}}"
+      bindinput="onCustomInput"
+      disabled="{{!useCustom}}"
+    />
+    <text class="custom-unit">分钟</text>
+  </view>
+
+  <!-- 预估消耗 -->
+  <view class="cal-preview">
+    <text class="cal-preview-label">预估消耗</text>
+    <text class="cal-preview-value">{{previewCal}} 大卡</text>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="confirm-btn" bindtap="onConfirm">
+    <text class="confirm-text">保存</text>
+  </view>
+</view>
