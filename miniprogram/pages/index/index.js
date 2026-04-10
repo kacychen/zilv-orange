@@ -22,17 +22,21 @@ Page({
     breakfastCal: 0,
     lunchCal: 0,
     dinnerCal: 0,
-    snackCal: 0
+    snackCal: 0,
+    // 新增：运动消耗
+    totalBurned: 0,
+    todaySteps: 0
   },
 
-  onLoad() {
-  },
+  onLoad() {},
 
   onShow() {
     this.setGreeting();
     this.setDateStr();
     this.loadUserInfo();
     this.loadTodayRecords();
+    this.loadExerciseData();
+    this.loadTodaySteps();
   },
 
   setGreeting() {
@@ -77,18 +81,12 @@ Page({
       const app = getApp();
       app.globalData.todayRecords = records;
 
-      // 按餐次分组
       const groups = { breakfast: [], lunch: [], dinner: [], snack: [] };
       records.forEach(r => {
-        if (groups[r.meal_type]) {
-          groups[r.meal_type].push(r);
-        }
+        if (groups[r.meal_type]) groups[r.meal_type].push(r);
       });
 
-      // 计算各餐次卡路里
       const calcMealCal = (foods) => foods.reduce((sum, f) => sum + (f.calories || 0), 0);
-
-      // 汇总
       const summary = sumNutrition(records);
 
       this.setData({
@@ -104,7 +102,7 @@ Page({
         totalProtein: summary.total_protein,
         totalCarbs: summary.total_carbs,
         totalFat: summary.total_fat,
-        remaining: this.data.calorieTarget - summary.total_calories
+        remaining: this.data.calorieTarget - summary.total_calories + this.data.totalBurned
       });
     }).catch(err => {
       console.error('加载记录失败', err);
@@ -112,11 +110,45 @@ Page({
     });
   },
 
+  loadExerciseData() {
+    const db = wx.cloud.database();
+    const today = getToday();
+
+    db.collection('exercise_records').where({ date: today }).get().then(res => {
+      const totalBurned = res.data.reduce((sum, r) => sum + (r.calories || 0), 0);
+      this.setData({
+        totalBurned,
+        remaining: this.data.calorieTarget - this.data.totalCalories + totalBurned
+      });
+    }).catch(err => {
+      console.error('加载运动记录失败', err);
+    });
+  },
+
+  loadTodaySteps() {
+    wx.getWeRunData({
+      success: (res) => {
+        const stepInfoList = res.stepInfoList || [];
+        const today = getToday();
+        const todayEntry = stepInfoList.find(s => {
+          const d = new Date(s.timestamp * 1000);
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${y}-${m}-${day}` === today;
+        });
+        this.setData({ todaySteps: todayEntry ? todayEntry.step : 0 });
+      },
+      fail: () => {
+        // 用户未授权或不支持，步数显示 0，不影响功能
+        this.setData({ todaySteps: 0 });
+      }
+    });
+  },
+
   onAddMeal(e) {
     const { mealType } = e.detail;
-    wx.navigateTo({
-      url: `/pages/record/record?mealType=${mealType}`
-    });
+    wx.navigateTo({ url: `/pages/record/record?mealType=${mealType}` });
   },
 
   onFoodDeleted(e) {
@@ -139,14 +171,16 @@ Page({
       totalProtein: Math.max(0, newTotalProtein),
       totalCarbs: Math.max(0, newTotalCarbs),
       totalFat: Math.max(0, newTotalFat),
-      remaining: this.data.calorieTarget - Math.max(0, newTotalCalories)
+      remaining: this.data.calorieTarget - Math.max(0, newTotalCalories) + this.data.totalBurned
     });
   },
 
   onEditFood(e) {
     const { id } = e.detail;
-    wx.navigateTo({
-      url: `/pages/food-edit/food-edit?id=${id}`
-    });
+    wx.navigateTo({ url: `/pages/food-edit/food-edit?id=${id}` });
   },
+
+  onAddExercise() {
+    wx.navigateTo({ url: '/pages/exercise-search/exercise-search' });
+  }
 });
