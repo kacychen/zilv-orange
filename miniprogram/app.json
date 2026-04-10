@@ -9,7 +9,8 @@
     "pages/photo-result/photo-result",
     "pages/onboarding/onboarding",
     "pages/food-detail/food-detail",
-    "pages/food-edit/food-edit"
+    "pages/food-edit/food-edit",
+    "pages/exercise-search/exercise-search"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -24,23 +25,16 @@
     "backgroundColor": "#ffffff",
     "borderStyle": "black",
     "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/analysis/analysis",
-        "text": "分析"
-      },
-      {
-        "pagePath": "pages/water/water",
-        "text": "饮水"
-      },
-      {
-        "pagePath": "pages/profile/profile",
-        "text": "我的"
-      }
+      { "pagePath": "pages/index/index",    "text": "首页" },
+      { "pagePath": "pages/analysis/analysis", "text": "分析" },
+      { "pagePath": "pages/water/water",    "text": "饮水" },
+      { "pagePath": "pages/profile/profile","text": "我的" }
     ]
+  },
+  "permission": {
+    "scope.werun": {
+      "desc": "获取您的微信运动步数，帮助展示今日步数进度"
+    }
   },
   "cloud": true,
   "sitemapLocation": "sitemap.json",
