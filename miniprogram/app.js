@@ -21,11 +21,14 @@ App({
       const openid = res.result.openid;
       this.globalData.openid = openid;
 
-      db.collection('users').where({ _id: openid }).get().then(res => {
-        if (res.data.length === 0) {
+      db.collection('users').doc(openid).get().then(res => {
+        this.globalData.userInfo = res.data;
+      }).catch(err => {
+        // 文档不存在（errCode -1）或其他错误 → 引导注册
+        if (err.errCode === -1 || (err.message && err.message.includes('not exist'))) {
           wx.navigateTo({ url: '/pages/onboarding/onboarding' });
         } else {
-          this.globalData.userInfo = res.data[0];
+          console.error('查询用户信息失败', err);
         }
       });
     }).catch(err => {
