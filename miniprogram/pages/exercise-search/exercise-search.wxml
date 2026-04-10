@@ -8,7 +8,7 @@
         placeholder="搜索运动名称"
         bindinput="onSearchInput"
         value="{{keyword}}"
-        focus="true"
+        focus="{{true}}"
       />
     </view>
   </view>
@@ -71,6 +71,7 @@
       placeholder-style="color:#ccc;"
       value="{{customDuration}}"
       bindinput="onCustomInput"
+      catchtap="noop"
       disabled="{{!useCustom}}"
     />
     <text class="custom-unit">分钟</text>
