@@ -31,11 +31,6 @@
       { "pagePath": "pages/profile/profile","text": "我的" }
     ]
   },
-  "permission": {
-    "scope.werun": {
-      "desc": "获取您的微信运动步数，帮助展示今日步数进度"
-    }
-  },
   "cloud": true,
   "sitemapLocation": "sitemap.json",
   "style": "v2"
