@@ -25,7 +25,11 @@ function buildGroups(exercises, keyword, weight) {
     });
   });
 
-  return typeOrder.filter(t => typeMap[t]).map(t => typeMap[t]);
+  const knownGroups = typeOrder.filter(t => typeMap[t]).map(t => typeMap[t]);
+  const unknownGroups = Object.keys(typeMap)
+    .filter(t => !typeOrder.includes(t))
+    .map(t => typeMap[t]);
+  return [...knownGroups, ...unknownGroups];
 }
 
 Page({
@@ -45,6 +49,7 @@ Page({
     const app = getApp();
     const weight = (app.globalData.userInfo && app.globalData.userInfo.weight) || 60;
     this._weight = weight;
+    this._db = wx.cloud.database();
     this.setData({ groups: buildGroups(EXERCISES, '', weight) });
   },
 
@@ -75,6 +80,7 @@ Page({
   },
 
   onDurationTap(e) {
+    if (!this.data.selectedExercise) return;
     const duration = e.currentTarget.dataset.val;
     const previewCal = calcCal(
       this.data.selectedExercise.met,
@@ -89,6 +95,7 @@ Page({
   },
 
   onCustomInput(e) {
+    if (!this.data.selectedExercise) return;
     const val = e.detail.value;
     const min = parseFloat(val) || 0;
     const previewCal = min > 0
@@ -101,6 +108,7 @@ Page({
 
   onConfirm() {
     const { selectedExercise, useCustom, duration, customDuration } = this.data;
+    if (!selectedExercise) return;
     const finalMin = useCustom ? parseFloat(customDuration) : duration;
 
     if (!finalMin || finalMin < 1 || finalMin > 300) {
@@ -109,7 +117,7 @@ Page({
     }
 
     const calories = calcCal(selectedExercise.met, this._weight, finalMin);
-    const db = wx.cloud.database();
+    const db = this._db;
     const record = {
       date: getToday(),
       exercise_name: selectedExercise.name,
@@ -126,7 +134,13 @@ Page({
       wx.hideLoading();
       wx.showToast({ title: '已记录', icon: 'success' });
       this.setData({ showSheet: false });
-      setTimeout(() => wx.navigateBack(), 1000);
+      setTimeout(() => {
+        if (getCurrentPages().length > 1) {
+          wx.navigateBack();
+        } else {
+          wx.switchTab({ url: '/pages/index/index' });
+        }
+      }, 1000);
     }).catch(() => {
       wx.hideLoading();
       wx.showToast({ title: '保存失败', icon: 'none' });
