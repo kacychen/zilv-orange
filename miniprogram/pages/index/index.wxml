@@ -18,6 +18,10 @@
         <text class="stat-value text-number">{{calorieTarget}}</text>
       </view>
       <view class="ring-stat">
+        <text class="stat-label">已消耗🔥</text>
+        <text class="stat-value text-number text-burned">{{totalBurned}}</text>
+      </view>
+      <view class="ring-stat">
         <text class="stat-label">剩余</text>
         <text class="stat-value text-number {{remaining < 0 ? 'over' : ''}}">{{remaining}}</text>
       </view>
@@ -78,4 +82,34 @@
     bind:foodDeleted="onFoodDeleted"
     bind:editFood="onEditFood"
   ></meal-card>
+
+  <!-- 运动消耗卡片 -->
+  <view class="section-title">运动消耗</view>
+  <view class="card exercise-summary-card">
+    <!-- 消耗大卡行 -->
+    <view class="exercise-row">
+      <view class="exercise-icon-bg">🏋️</view>
+      <view class="exercise-info">
+        <text class="exercise-name">已消耗</text>
+        <text class="exercise-cal">{{totalBurned}} 大卡</text>
+      </view>
+      <view class="exercise-add-btn" bindtap="onAddExercise">＋</view>
+    </view>
+
+    <view class="exercise-divider"></view>
+
+    <!-- 步数行 -->
+    <view class="steps-row">
+      <view class="steps-icon-bg">🚶</view>
+      <view class="steps-info">
+        <view class="steps-name-row">
+          <text class="steps-name">今日步数</text>
+          <text class="steps-count">{{todaySteps}} / 6000</text>
+        </view>
+        <view class="steps-bar-bg">
+          <view class="steps-bar-fill" style="width: {{todaySteps >= 6000 ? 100 : todaySteps / 60}}%"></view>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>
