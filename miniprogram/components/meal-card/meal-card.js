@@ -1,5 +1,3 @@
-const db = wx.cloud.database();
-
 Component({
   properties: {
     mealType: { type: String, value: 'breakfast' },
@@ -101,6 +99,7 @@ Component({
             return;
           }
           wx.showLoading({ title: '删除中...' });
+          const db = wx.cloud.database();
           db.collection('meal_records').doc(food._id).remove().then(() => {
             wx.hideLoading();
             // 本地移除

@@ -31,9 +31,12 @@ Page({
     lunchCal: 0,
     dinnerCal: 0,
     snackCal: 0,
-    // 新增：运动消耗
+    // 运动消耗
     totalBurned: 0,
-    todaySteps: 0
+    stepsBurned: 0,
+    todaySteps: 0,
+    // 'unauthorized': 未授权  'denied': 已拒绝需去设置  'granted': 已授权  'disabled': 微信运动未开启
+    stepsStatus: 'unauthorized'
   },
 
   onLoad() {},
@@ -123,32 +126,101 @@ Page({
     const today = getToday();
 
     return db.collection('exercise_records').where({ date: today }).get().then(res => {
-      const totalBurned = res.data.reduce((sum, r) => sum + (r.calories || 0), 0);
-      this.setData({
-        totalBurned
-      });
+      const totalBurned = (res.data || []).reduce((sum, r) => sum + (r.calories || 0), 0);
+      this.setData({ totalBurned });
     }).catch(err => {
+      // -502005: 集合不存在（首次使用），静默处理
+      if (err.errCode === -502005) {
+        this.setData({ totalBurned: 0 });
+        return;
+      }
       console.error('加载运动记录失败', err);
       wx.showToast({ title: '运动记录加载失败', icon: 'none' });
     });
   },
 
   recalcRemaining() {
+    const { calorieTarget, totalCalories, totalBurned, stepsBurned } = this.data;
     this.setData({
-      remaining: this.data.calorieTarget - this.data.totalCalories + this.data.totalBurned
+      remaining: calorieTarget - totalCalories + totalBurned + stepsBurned
     });
   },
 
   loadTodaySteps() {
-    wx.getWeRunData({
+    wx.getSetting({
       success: (res) => {
-        const stepInfoList = res.stepInfoList || [];
-        const today = getToday();
-        const todayEntry = stepInfoList.find(s => timestampToDateStr(s.timestamp) === today);
-        this.setData({ todaySteps: todayEntry ? todayEntry.step : 0 });
+        const auth = res.authSetting['scope.werun'];
+        if (auth === undefined || auth === false) {
+          // undefined = 从未询问过；false = 用户曾拒绝
+          this.setData({ stepsStatus: auth === false ? 'denied' : 'unauthorized' });
+          return;
+        }
+        // 已授权，拉取步数
+        wx.getWeRunData({
+          success: (res) => {
+            const cloudID = res.cloudID;
+            if (!cloudID) {
+              // 理论上不会走到这里，保底处理
+              this.setData({ stepsStatus: 'granted', todaySteps: 0, stepsBurned: 0 });
+              return;
+            }
+            wx.cloud.callFunction({
+              name: 'getWeRunData',
+              data: { weRunData: wx.cloud.CloudID(String(cloudID)) }
+            }).then(r => {
+              const result = r.result;
+              if (!result.success) {
+                console.error('[steps] 云函数解密失败', result);
+                this.setData({ stepsStatus: 'granted', todaySteps: 0, stepsBurned: 0 });
+                return;
+              }
+              const stepInfoList = result.stepInfoList || [];
+              const today = getToday();
+              const todayEntry = stepInfoList.find(s => timestampToDateStr(s.timestamp) === today);
+              const steps = todayEntry ? todayEntry.step : 0;
+              const app = getApp();
+              const weight = (app.globalData.userInfo && app.globalData.userInfo.weight) || 60;
+              const stepsBurned = Math.round(steps * weight * 0.0005);
+              this.setData({ todaySteps: steps, stepsBurned, stepsStatus: 'granted' });
+              this.recalcRemaining();
+            }).catch(err => {
+              console.error('[steps] 调用云函数失败', err);
+              this.setData({ stepsStatus: 'granted', todaySteps: 0, stepsBurned: 0 });
+            });
+          },
+          fail: () => {
+            // 授权有但拿不到数据，通常是用户没开微信运动
+            this.setData({ stepsStatus: 'disabled' });
+          }
+        });
       },
       fail: () => {
-        // 用户未授权或不支持，步数显示 0，不影响功能
+        this.setData({ stepsStatus: 'unauthorized' });
+      }
+    });
+  },
+
+  // 点击「授权步数」按钮
+  onAuthSteps() {
+    wx.authorize({
+      scope: 'scope.werun',
+      success: () => {
+        this.loadTodaySteps();
+      },
+      fail: () => {
+        // 用户点了拒绝，引导去设置
+        this.setData({ stepsStatus: 'denied' });
+      }
+    });
+  },
+
+  // 点击「去设置开启」按钮（已拒绝情况）
+  onOpenStepsSetting() {
+    wx.openSetting({
+      success: (res) => {
+        if (res.authSetting['scope.werun']) {
+          this.loadTodaySteps();
+        }
       }
     });
   },
@@ -178,7 +250,7 @@ Page({
       totalProtein: Math.max(0, newTotalProtein),
       totalCarbs: Math.max(0, newTotalCarbs),
       totalFat: Math.max(0, newTotalFat),
-      remaining: this.data.calorieTarget - Math.max(0, newTotalCalories) + this.data.totalBurned
+      remaining: this.data.calorieTarget - Math.max(0, newTotalCalories) + this.data.totalBurned + this.data.stepsBurned
     });
   },
 

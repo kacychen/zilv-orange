@@ -1,6 +1,7 @@
 {
   "libVersion": "3.15.1",
   "projectname": "miniprogram",
+  "cloudbaseEnv": "cloud1-5gi2unut161474f9",
   "condition": {},
   "setting": {
     "urlCheck": true,

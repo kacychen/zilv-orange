@@ -141,8 +141,9 @@ Page({
           wx.switchTab({ url: '/pages/index/index' });
         }
       }, 1000);
-    }).catch(() => {
+    }).catch((err) => {
       wx.hideLoading();
+      console.error('保存运动记录失败', err);
       wx.showToast({ title: '保存失败', icon: 'none' });
     });
   }

@@ -19,7 +19,7 @@
       </view>
       <view class="ring-stat">
         <text class="stat-label">已消耗🔥</text>
-        <text class="stat-value text-number text-burned">{{totalBurned}}</text>
+        <text class="stat-value text-number text-burned">{{totalBurned + stepsBurned}}</text>
       </view>
       <view class="ring-stat">
         <text class="stat-label">剩余</text>
@@ -102,13 +102,40 @@
     <view class="steps-row">
       <view class="steps-icon-bg">🚶</view>
       <view class="steps-info">
-        <view class="steps-name-row">
+
+        <!-- 已授权，正常显示步数 -->
+        <block wx:if="{{stepsStatus === 'granted'}}">
+          <view class="steps-name-row">
+            <text class="steps-name">今日步数</text>
+            <text class="steps-count">{{todaySteps}} / 6000  🔥{{stepsBurned}} 大卡</text>
+          </view>
+          <view class="steps-bar-bg">
+            <view class="steps-bar-fill" style="width: {{todaySteps >= 6000 ? 100 : todaySteps / 60}}%"></view>
+          </view>
+        </block>
+
+        <!-- 从未授权，显示授权按钮 -->
+        <block wx:elif="{{stepsStatus === 'unauthorized'}}">
           <text class="steps-name">今日步数</text>
-          <text class="steps-count">{{todaySteps}} / 6000</text>
-        </view>
-        <view class="steps-bar-bg">
-          <view class="steps-bar-fill" style="width: {{todaySteps >= 6000 ? 100 : todaySteps / 60}}%"></view>
-        </view>
+          <view class="steps-auth-btn" bindtap="onAuthSteps">
+            <text class="steps-auth-text">授权查看步数</text>
+          </view>
+        </block>
+
+        <!-- 曾经拒绝，引导去设置 -->
+        <block wx:elif="{{stepsStatus === 'denied'}}">
+          <text class="steps-name">今日步数</text>
+          <view class="steps-auth-btn steps-auth-btn-secondary" bindtap="onOpenStepsSetting">
+            <text class="steps-auth-text">去设置开启权限</text>
+          </view>
+        </block>
+
+        <!-- 已授权但微信运动未开启 -->
+        <block wx:elif="{{stepsStatus === 'disabled'}}">
+          <text class="steps-name">今日步数</text>
+          <text class="steps-hint">请先在微信中开启「微信运动」</text>
+        </block>
+
       </view>
     </view>
   </view>

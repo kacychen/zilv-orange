@@ -169,3 +169,28 @@
   background: linear-gradient(90deg, #4CAF50, #81C784);
   border-radius: 6rpx;
 }
+
+/* 步数授权按钮 */
+.steps-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8rpx;
+  padding: 8rpx 20rpx;
+  background: #4CAF50;
+  border-radius: 30rpx;
+}
+.steps-auth-btn-secondary {
+  background: #FF7A00;
+}
+.steps-auth-text {
+  font-size: 22rpx;
+  color: #fff;
+}
+
+/* 微信运动未开启提示 */
+.steps-hint {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+  display: block;
+}
