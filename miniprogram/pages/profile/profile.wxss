@@ -257,3 +257,58 @@
 .flex1 {
   flex: 1;
 }
+
+/* ── 会员状态卡片 ── */
+.member-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #FFF3E0, #FFF8F3);
+  border: 1rpx solid #FFD9A8;
+}
+
+.member-card-inactive {
+  background: #FAFAFA;
+  border: 1rpx solid #F0F0F0;
+}
+
+.member-card-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.member-card-icon {
+  font-size: 48rpx;
+}
+
+.member-card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+}
+
+.member-card-expire {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+  display: block;
+}
+
+.member-card-tag {
+  background: linear-gradient(135deg, #FF7A00, #FFB347);
+  color: #fff;
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 20rpx;
+}
+
+.member-activate-btn {
+  background: linear-gradient(135deg, #FF7A00, #FFB347);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  padding: 12rpx 28rpx;
+  border-radius: 40rpx;
+}

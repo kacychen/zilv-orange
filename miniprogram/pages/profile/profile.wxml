@@ -16,6 +16,29 @@
     </view>
   </view>
 
+  <!-- 会员状态卡片 -->
+  <view class="card member-card" wx:if="{{isMember}}">
+    <view class="member-card-left">
+      <text class="member-card-icon">✨</text>
+      <view>
+        <text class="member-card-title">会员用户</text>
+        <text class="member-card-expire">{{memberExpireStr}}</text>
+      </view>
+    </view>
+    <view class="member-card-tag">已开通</view>
+  </view>
+
+  <view class="card member-card member-card-inactive" wx:else>
+    <view class="member-card-left">
+      <text class="member-card-icon">🔒</text>
+      <view>
+        <text class="member-card-title">尚未开通会员</text>
+        <text class="member-card-expire">开通后可使用 AI 拍照识别</text>
+      </view>
+    </view>
+    <view class="member-activate-btn" bindtap="onOpenMembership">立即开通</view>
+  </view>
+
   <!-- 打卡统计 -->
   <view class="card stats-row">
     <view class="stat-item">

@@ -1,4 +1,5 @@
 const { calcDailyTarget } = require('../../utils/bmr');
+const { isMember } = require('../../utils/member');
 
 const GOAL_LABELS = {
   lose_weight: '减脂',
@@ -32,7 +33,9 @@ Page({
     weightGap: 0,
     weightGapStr: '0.0',
     editing: false,
-    editForm: {}
+    editForm: {},
+    isMember: false,
+    memberExpireStr: ''
   },
 
   onShow() {
@@ -53,6 +56,14 @@ Page({
       weightGap: gap,
       weightGapStr: (gap > 0 ? '+' : '') + gap.toFixed(1)
     });
+
+    const memberActive = isMember(user);
+    let memberExpireStr = '';
+    if (memberActive && user.member_expire_at) {
+      const d = new Date(user.member_expire_at);
+      memberExpireStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} 到期`;
+    }
+    this.setData({ isMember: memberActive, memberExpireStr });
 
     this.loadStreak();
     this.loadAchievements();
@@ -101,6 +112,10 @@ Page({
     .catch(() => {
       console.error('加载成就失败');
     });
+  },
+
+  onOpenMembership() {
+    wx.navigateTo({ url: '/pages/record/record?openMemberModal=1' });
   },
 
   startEdit() {
