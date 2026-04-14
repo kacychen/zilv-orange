@@ -1,4 +1,5 @@
 const { getToday } = require('../../utils/date');
+const { isMember } = require('../../utils/member');
 
 const MEAL_NAMES = {
   breakfast: '早餐',
@@ -12,6 +13,7 @@ Page({
     mealType: 'breakfast',
     mealName: '早餐',
     showManual: false,
+    showMemberModal: false,
     manualFood: {
       food_name: '',
       amount: '',
@@ -28,6 +30,12 @@ Page({
       mealType,
       mealName: MEAL_NAMES[mealType] || '早餐'
     });
+    if (options.openMemberModal === '1') {
+      const app = getApp();
+      if (!isMember(app.globalData.userInfo)) {
+        this.setData({ showMemberModal: true });
+      }
+    }
   },
 
   goFoodSearch() {
@@ -37,6 +45,12 @@ Page({
   },
 
   takePhoto() {
+    const app = getApp();
+    if (!isMember(app.globalData.userInfo)) {
+      this.setData({ showMemberModal: true });
+      return;
+    }
+
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
@@ -134,10 +148,62 @@ Page({
     db.collection('meal_records').add({ data: record }).then(() => {
       wx.hideLoading();
       wx.showToast({ title: '添加成功', icon: 'success' });
-      setTimeout(() => wx.navigateBack(), 1000);
+      // 非会员：添加成功后软引导开通 AI 识别
+      const app = getApp();
+      if (!isMember(app.globalData.userInfo)) {
+        setTimeout(() => {
+          wx.showModal({
+            title: '💡 小提示',
+            content: '开通会员后，下次直接拍照即可自动识别热量，省去手动搜索',
+            confirmText: '了解一下',
+            cancelText: '暂不',
+            success: (res) => {
+              if (res.confirm) {
+                this.setData({ showMemberModal: true });
+              }
+            }
+          });
+        }, 1500);
+      } else {
+        setTimeout(() => wx.navigateBack(), 1000);
+      }
     }).catch(() => {
       wx.hideLoading();
       wx.showToast({ title: '保存失败', icon: 'none' });
+    });
+  },
+
+  closeMemberModal() {
+    this.setData({ showMemberModal: false });
+  },
+
+  onBuyMembership(e) {
+    // TODO: 正式版替换为 createOrder + wx.requestPayment
+    // 当前为模拟支付，直接调用云函数写入会员状态
+    const plan = e.currentTarget.dataset.plan || 'monthly';
+    wx.showLoading({ title: '开通中...' });
+    wx.cloud.callFunction({
+      name: 'activateMembership',
+      data: { plan }
+    }).then(res => {
+      wx.hideLoading();
+      if (res.result.success) {
+        const app = getApp();
+        app.globalData.userInfo = {
+          ...app.globalData.userInfo,
+          is_member: true,
+          member_expire_at: res.result.member_expire_at,
+          member_plan: res.result.plan
+        };
+        app.globalData.isMember = true;
+        this.setData({ showMemberModal: false });
+        wx.showToast({ title: '会员开通成功 🎉', icon: 'success' });
+      } else {
+        wx.showToast({ title: '开通失败，请重试', icon: 'none' });
+      }
+    }).catch(() => {
+      wx.hideLoading();
+      wx.showToast({ title: '开通失败，请重试', icon: 'none' });
     });
   }
 });

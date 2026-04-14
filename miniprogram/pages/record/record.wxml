@@ -13,12 +13,17 @@
       <text class="method-desc">从食物数据库中搜索</text>
     </view>
 
-    <view class="method-card" bindtap="takePhoto">
+    <view class="method-card photo-card" bindtap="takePhoto">
       <view class="method-icon" style="background: #E8F5E9;">
         <text>📷</text>
       </view>
       <text class="method-name">拍照识别</text>
       <text class="method-desc">AI 智能识别食物</text>
+      <!-- 会员专属锁定覆盖层 -->
+      <view class="photo-lock-overlay">
+        <text class="lock-icon">🔒</text>
+        <text class="lock-text">会员专属</text>
+      </view>
     </view>
 
     <view class="method-card" bindtap="manualInput">
@@ -60,5 +65,47 @@
       <input class="form-input" type="digit" placeholder="0" bindinput="onInputFat" value="{{manualFood.fat}}" />
     </view>
     <button class="btn-primary" bindtap="submitManual">确认添加</button>
+  </view>
+</view>
+
+<!-- 会员付费引导 modal -->
+<view class="modal-mask" wx:if="{{showMemberModal}}" bindtap="closeMemberModal"></view>
+<view class="member-modal card" wx:if="{{showMemberModal}}">
+  <view class="member-modal-header">
+    <text class="member-modal-title">✨ 解锁 AI 识别</text>
+    <text class="member-modal-subtitle">拍一张照片，3 秒自动识别所有食物热量</text>
+  </view>
+
+  <view class="member-features">
+    <view class="feature-item">
+      <text class="feature-icon">📷</text>
+      <text class="feature-text">AI 智能识别，无需手动搜索</text>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">⚡️</text>
+      <text class="feature-text">拍照 3 秒出结果，多菜同时识别</text>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">🎯</text>
+      <text class="feature-text">热量、蛋白质、碳水全自动填写</text>
+    </view>
+  </view>
+
+  <view class="member-plans">
+    <view class="plan-card" bindtap="onBuyMembership" data-plan="monthly">
+      <text class="plan-duration">月度会员</text>
+      <text class="plan-price">¥9.9</text>
+      <text class="plan-unit">/ 30天</text>
+    </view>
+    <view class="plan-card plan-card-highlight" bindtap="onBuyMembership" data-plan="yearly">
+      <view class="plan-badge">推荐</view>
+      <text class="plan-duration">年度会员</text>
+      <text class="plan-price">¥68</text>
+      <text class="plan-unit">/ 365天 · 仅¥0.19/天</text>
+    </view>
+  </view>
+
+  <view class="member-modal-footer" bindtap="closeMemberModal">
+    <text class="modal-cancel-text">暂不开通，继续手动记录</text>
   </view>
 </view>

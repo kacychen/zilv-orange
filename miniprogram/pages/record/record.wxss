@@ -101,3 +101,153 @@
 .btn-primary::after {
   border: none;
 }
+
+/* ── 拍照卡片锁定覆盖层 ── */
+.photo-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-lock-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.lock-icon {
+  font-size: 40rpx;
+}
+
+.lock-text {
+  font-size: 22rpx;
+  color: #fff;
+  font-weight: 600;
+  background: linear-gradient(135deg, #FF7A00, #FFB347);
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+}
+
+/* ── 会员 modal ── */
+.modal-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+}
+
+.member-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 101;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 40rpx 32rpx 60rpx;
+}
+
+.member-modal-header {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.member-modal-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #333;
+  display: block;
+}
+
+.member-modal-subtitle {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.member-features {
+  margin-bottom: 32rpx;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.feature-icon {
+  font-size: 32rpx;
+}
+
+.feature-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.member-plans {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 32rpx;
+}
+
+.plan-card {
+  flex: 1;
+  border: 2rpx solid #F0F0F0;
+  border-radius: 20rpx;
+  padding: 24rpx 16rpx;
+  text-align: center;
+  position: relative;
+}
+
+.plan-card-highlight {
+  border-color: #FF7A00;
+  background: #FFF8F3;
+}
+
+.plan-badge {
+  position: absolute;
+  top: -18rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FF7A00;
+  color: #fff;
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.plan-duration {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.plan-price {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #FF7A00;
+  display: block;
+}
+
+.plan-unit {
+  font-size: 22rpx;
+  color: #999;
+  display: block;
+  margin-top: 4rpx;
+}
+
+.member-modal-footer {
+  text-align: center;
+}
+
+.modal-cancel-text {
+  font-size: 26rpx;
+  color: #999;
+}
