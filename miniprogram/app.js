@@ -10,6 +10,7 @@ App({
 
   globalData: {
     userInfo: null,
+    isMember: false,
     dailySummary: null,
     todayRecords: [],
     openid: ''
@@ -23,6 +24,9 @@ App({
 
       db.collection('users').doc(openid).get().then(res => {
         this.globalData.userInfo = res.data;
+        // 预计算会员状态，方便各页面快速判断
+        const { isMember } = require('./utils/member');
+        this.globalData.isMember = isMember(res.data);
       }).catch(err => {
         // 文档不存在（errCode -1）或其他错误 → 引导注册
         if (err.errCode === -1 || (err.message && err.message.includes('not exist'))) {
