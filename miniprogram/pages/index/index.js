@@ -1,5 +1,6 @@
 const { getToday } = require('../../utils/date');
 const { sumNutrition, recommendedNutrients } = require('../../utils/nutrition');
+const { isMember } = require('../../utils/member');
 
 function timestampToDateStr(ts) {
   const d = new Date(ts * 1000);
@@ -36,7 +37,9 @@ Page({
     stepsBurned: 0,
     todaySteps: 0,
     // 'unauthorized': 未授权  'denied': 已拒绝需去设置  'granted': 已授权  'disabled': 微信运动未开启
-    stepsStatus: 'unauthorized'
+    stepsStatus: 'unauthorized',
+    // 非会员引导 Banner
+    showMemberBanner: false
   },
 
   onLoad() {},
@@ -49,6 +52,7 @@ Page({
       this.recalcRemaining();
     });
     this.loadTodaySteps();
+    this.checkMemberBanner();
   },
 
   setGreeting() {
@@ -261,5 +265,15 @@ Page({
 
   onAddExercise() {
     wx.navigateTo({ url: '/pages/exercise-search/exercise-search' });
+  },
+
+  checkMemberBanner() {
+    const app = getApp();
+    const show = !isMember(app.globalData.userInfo);
+    this.setData({ showMemberBanner: show });
+  },
+
+  onMemberBannerTap() {
+    wx.navigateTo({ url: '/pages/record/record?openMemberModal=1' });
   }
 });

@@ -194,3 +194,44 @@
   margin-top: 8rpx;
   display: block;
 }
+
+/* ── 首页会员引导 Banner ── */
+.member-banner {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+  border-radius: 20rpx;
+  padding: 20rpx 24rpx;
+  margin: 0 0 20rpx 0;
+  gap: 16rpx;
+}
+
+.member-banner-icon {
+  font-size: 44rpx;
+  flex-shrink: 0;
+}
+
+.member-banner-text {
+  flex: 1;
+}
+
+.member-banner-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #C05000;
+  display: block;
+}
+
+.member-banner-sub {
+  font-size: 22rpx;
+  color: #E07030;
+  margin-top: 4rpx;
+  display: block;
+}
+
+.member-banner-arrow {
+  font-size: 40rpx;
+  color: #FF7A00;
+  font-weight: 300;
+  flex-shrink: 0;
+}

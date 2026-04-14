@@ -5,6 +5,16 @@
     <text class="date-text">{{dateStr}}</text>
   </view>
 
+  <!-- 非会员引导 Banner -->
+  <view class="member-banner" wx:if="{{showMemberBanner}}" bindtap="onMemberBannerTap">
+    <text class="member-banner-icon">📷</text>
+    <view class="member-banner-text">
+      <text class="member-banner-title">AI 识别食物，告别手动搜索</text>
+      <text class="member-banner-sub">开通会员 · 月低至 ¥9.9</text>
+    </view>
+    <text class="member-banner-arrow">›</text>
+  </view>
+
   <!-- 卡路里环形进度 -->
   <view class="card ring-card">
     <calorie-ring current="{{totalCalories}}" target="{{calorieTarget}}"></calorie-ring>
